@@ -1,3 +1,4 @@
 rootProject.name = 'nekodion-backend'
 
 include(':api')
+include(':support')
