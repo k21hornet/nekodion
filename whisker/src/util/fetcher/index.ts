@@ -1,5 +1,6 @@
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { CREATED, NO_CONTENT } from "./const";
+import { auth0 } from "@/lib/auth0";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -37,7 +38,8 @@ export const fetcher = {
         const TIME_LIMIT = 10000; // タイムアウト時間（ミリ秒）
         timer = setTimeout(abort, TIME_LIMIT);
 
-        const customAccessToken = "dummy"; // TODO
+        const customAccessToken =
+          accessToken ?? (await auth0.getAccessToken()).token;
 
         const isFormData = requestBody instanceof FormData;
         const headers: Record<string, string> = {
