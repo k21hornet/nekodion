@@ -28,7 +28,7 @@ public class GmailUseCase {
                         .subject(msg.getSubject())
                         .from(msg.getFrom())
                         .date(msg.getDate())
-                        .snippet(msg.getSnippet())
+                        .body(msg.getBody())
                         .build())
                 .toList();
     }

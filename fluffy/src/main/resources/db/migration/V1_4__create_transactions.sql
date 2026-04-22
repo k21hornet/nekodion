@@ -28,7 +28,7 @@ CREATE TABLE transactions
     transaction_type    VARCHAR(20)     NOT NULL    COMMENT '種別',
     transaction_name    VARCHAR(50)     NOT NULL    COMMENT '収支名',
     amount              DECIMAL(15, 2)  NOT NULL    COMMENT '金額',
-    transaction_date    DATE            NOT NULL    COMMENT '取引日',
+    transaction_at      DATETIME        NOT NULL    COMMENT '取引日時',
     description         VARCHAR(255)                COMMENT '取引内容',
     transfer_id         BIGINT                      COMMENT '振替ID（NULLでなければ振替取引）',
     is_aggregated       BOOLEAN         NOT NULL    COMMENT '集計対象フラグ',

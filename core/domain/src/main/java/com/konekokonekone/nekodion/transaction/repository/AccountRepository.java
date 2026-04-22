@@ -39,4 +39,16 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Boolean existsByUserIdAndAccountName(String userId, String accountName);
 
     Optional<Account> findByIdAndUserId(Long id, String userId);
+
+    @Query("""
+            SELECT
+                a
+            FROM
+                Account a
+            LEFT JOIN FETCH
+                a.accountTemplate
+            WHERE
+                a.userId = :userId
+            """)
+    List<Account> findByUserIdWithTemplate(String userId);
 }

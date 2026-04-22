@@ -19,5 +19,5 @@ public class GmailMessageResponse {
 
     private String date;
 
-    private String snippet;
+    private String body;
 }

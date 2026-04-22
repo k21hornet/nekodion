@@ -1,11 +1,17 @@
 package com.konekokonekone.nekodion.transaction.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TransactionRequestDto {
 
     private Long accountId;
@@ -16,7 +22,7 @@ public class TransactionRequestDto {
 
     private BigDecimal amount;
 
-    private LocalDate transactionDate;
+    private LocalDateTime transactionDateTime;
 
     private String description;
 }

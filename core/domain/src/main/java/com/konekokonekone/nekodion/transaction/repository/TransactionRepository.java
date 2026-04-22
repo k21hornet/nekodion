@@ -21,7 +21,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             WHERE
                 t.userId = :userId
             ORDER BY
-                t.transactionDate DESC
+                t.transactionDateTime DESC
             """)
     List<Transaction> findByUserId(String userId);
 

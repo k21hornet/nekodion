@@ -12,9 +12,9 @@ export const TransactionTable = ({ transactions }: Props) => {
   return (
     <div className="space-y-4">
       {transactions.map((group) => (
-        <div key={group.transactionDate}>
+        <div key={group.transactionDateTime}>
           <p className="text-muted-foreground border-border border-b pb-2 text-xs font-medium">
-            {formatDate(group.transactionDate)}
+            {formatDate(group.transactionDateTime)}
           </p>
           <ul className="mt-1">
             {group.dailyTransactions.map((tx) => (

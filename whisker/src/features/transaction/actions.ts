@@ -39,7 +39,7 @@ export async function createTransactionAction(
     accountId: Number(accountId),
     transactionName,
     amount: Number(amountStr),
-    transactionDate,
+    transactionDateTime: `${transactionDate}T00:00:00`,
     description,
   });
 
@@ -86,7 +86,7 @@ export async function updateTransactionAction(
     accountId: Number(accountId),
     transactionName,
     amount: Number(amountStr),
-    transactionDate,
+    transactionDateTime: `${transactionDate}T00:00:00`,
     description,
   });
 

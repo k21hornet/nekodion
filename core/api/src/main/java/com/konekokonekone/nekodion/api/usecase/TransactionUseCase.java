@@ -12,7 +12,7 @@ import com.konekokonekone.nekodion.transaction.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,16 +40,16 @@ public class TransactionUseCase {
 
         // 取引日Map<取引日, 入出金>
         var grouped = transactions.stream()
-                .collect(Collectors.groupingBy(Transaction::getTransactionDate));
+                .collect(Collectors.groupingBy(Transaction::getTransactionDateTime));
         return grouped.entrySet().stream()
-                .sorted(Map.Entry.<LocalDate, List<Transaction>>comparingByKey().reversed()) // 降順
+                .sorted(Map.Entry.<LocalDateTime, List<Transaction>>comparingByKey().reversed()) // 降順
                 .map(e -> {
                     var date = e.getKey();
                     var transactionResponses = e.getValue().stream()
                             .map(transactionItemMapper::toItem)
                             .toList();
                     return DailyTransactionResponse.builder()
-                            .transactionDate(date)
+                            .transactionDateTime(date)
                             .dailyTransactions(transactionResponses)
                             .build();
                 }).toList();

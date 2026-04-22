@@ -72,7 +72,7 @@ public class TransactionService {
         transaction.setTransactionType(TransactionType.codeOf(dto.getTransactionType()));
         transaction.setTransactionName(dto.getTransactionName());
         transaction.setAmount(dto.getAmount());
-        transaction.setTransactionDate(dto.getTransactionDate());
+        transaction.setTransactionDateTime(dto.getTransactionDateTime());
         transaction.setDescription(dto.getDescription());
         transaction.setIsAggregated(true);
         transaction.setIsConfirmed(true);
@@ -98,7 +98,7 @@ public class TransactionService {
         transaction.setTransactionType(TransactionType.codeOf(dto.getTransactionType()));
         transaction.setTransactionName(dto.getTransactionName());
         transaction.setAmount(dto.getAmount());
-        transaction.setTransactionDate(dto.getTransactionDate());
+        transaction.setTransactionDateTime(dto.getTransactionDateTime());
         transaction.setDescription(dto.getDescription());
 
         transactionRepository.save(transaction);

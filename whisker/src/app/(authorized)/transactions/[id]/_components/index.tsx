@@ -46,7 +46,7 @@ export const TransactionDetailPage = ({ transaction, accounts }: Props) => {
           accountId: String(transaction.accountId),
           transactionName: transaction.transactionName ?? "",
           amount: transaction.amount,
-          transactionDate: transaction.transactionDate,
+          transactionDate: transaction.transactionDateTime.split("T")[0],
           description: transaction.description ?? "",
         }}
         accounts={accounts}

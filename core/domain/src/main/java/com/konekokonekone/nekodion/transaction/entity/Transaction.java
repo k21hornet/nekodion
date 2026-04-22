@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -38,8 +38,8 @@ public class Transaction extends AbstractBaseEntity {
     @Column(name = "amount")
     private BigDecimal amount;
 
-    @Column(name = "transaction_date")
-    private LocalDate transactionDate;
+    @Column(name = "transaction_at")
+    private LocalDateTime transactionDateTime;
 
     @Column(name = "description")
     private String description;

@@ -1,5 +1,5 @@
 export type DailyTransactionResponse = {
-  transactionDate: string;
+  transactionDateTime: string;
   dailyTransactions: TransactionItem[];
 };
 
@@ -28,6 +28,6 @@ export type TransactionDetailResponse = {
   transactionType: string;
   transactionName: string | null;
   amount: number;
-  transactionDate: string;
+  transactionDateTime: string;
   description: string | null;
 };
