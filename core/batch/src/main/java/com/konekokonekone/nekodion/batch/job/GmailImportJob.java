@@ -3,6 +3,7 @@ package com.konekokonekone.nekodion.batch.job;
 import com.konekokonekone.nekodion.batch.runner.BatchResult;
 import com.konekokonekone.nekodion.batch.runner.BatchResultStatus;
 import com.konekokonekone.nekodion.batch.usecase.JcbCardImportUseCase;
+import com.konekokonekone.nekodion.batch.usecase.SmbcBankDepositImportUseCase;
 import com.konekokonekone.nekodion.batch.usecase.SmbcCardImportUseCase;
 import com.konekokonekone.nekodion.external.gmail.entity.GmailCredentialEntity;
 import com.konekokonekone.nekodion.external.gmail.repository.GmailCredentialRepository;
@@ -29,9 +30,15 @@ public class GmailImportJob implements BatchJob {
 
     private final AccountRepository accountRepository;
 
+    private final SmbcBankDepositImportUseCase smbcBankDepositImportUseCase;
+
     private final SmbcCardImportUseCase smbcCardImportUseCase;
 
     private final JcbCardImportUseCase jcbCardImportUseCase;
+
+    private static final long SMBC_BANK_DEPOSIT_TEMPLATE_ID = 1L; // 振込入金
+
+//    private static final long SMBC_BANK_WITHDRAWAL_TEMPLATE_ID = 1L; // 出金
 
     private static final long SMBC_CARD_TEMPLATE_ID = 4L;
 
@@ -71,6 +78,8 @@ public class GmailImportJob implements BatchJob {
                 smbcCardImportUseCase.execute(user, account, result);
             } else if (templateId == JCB_CARD_TEMPLATE_ID) {
                 jcbCardImportUseCase.execute(user, account, result);
+            } else if (templateId == SMBC_BANK_DEPOSIT_TEMPLATE_ID) {
+                 smbcBankDepositImportUseCase.execute(user, account, result);
             }
         }
     }
