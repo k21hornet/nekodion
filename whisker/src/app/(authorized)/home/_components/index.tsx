@@ -5,6 +5,7 @@ import { TransactionTable } from "@/features/transaction/components/TransactionT
 import {
   TotalAssetsResponse,
   DailyTransactionResponse,
+  MonthlySummaryResponse,
 } from "@/features/transaction/types";
 
 import { ArrowRight, LogOut, PlusCircle } from "lucide-react";
@@ -13,10 +14,12 @@ import Link from "next/link";
 type Props = {
   transactions: DailyTransactionResponse[];
   totalAssets: TotalAssetsResponse;
+  monthlySummary: MonthlySummaryResponse;
 };
 
-export const HomePage = ({ transactions, totalAssets }: Props) => {
+export const HomePage = ({ transactions, totalAssets, monthlySummary }: Props) => {
   const limitedTransactions = transactions.slice(0, 3); // 直近日の入出金を表示
+  const monthlyBalance = monthlySummary.totalIncome - monthlySummary.totalExpense;
 
   return (
     <div className="space-y-4">
@@ -26,6 +29,39 @@ export const HomePage = ({ transactions, totalAssets }: Props) => {
           <p className="text-right text-3xl font-bold">
             ¥{totalAssets.totalAssets.toLocaleString()}
           </p>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-sm">
+        <CardContent className="py-3">
+          <p className="text-sm font-semibold text-muted-foreground mb-2">
+            {monthlySummary.month}月の収支
+          </p>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div>
+              <p className="text-xs text-muted-foreground">収入</p>
+              <p className="text-sm font-bold text-blue-600">
+                ¥{monthlySummary.totalIncome.toLocaleString()}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">支出</p>
+              <p className="text-sm font-bold text-red-500">
+                ¥{monthlySummary.totalExpense.toLocaleString()}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">収支</p>
+              <p
+                className={`text-sm font-bold ${
+                  monthlyBalance >= 0 ? "text-blue-600" : "text-red-500"
+                }`}
+              >
+                {monthlyBalance >= 0 ? "+" : ""}
+                ¥{monthlyBalance.toLocaleString()}
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

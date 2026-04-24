@@ -41,9 +41,17 @@ export const AccountDetailPage = ({ account, templates }: Props) => {
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-xl font-bold tracking-tight">口座編集</h1>
           <div className="text-right">
-            <p className="text-muted-foreground text-xs">残高</p>
+            {account.accountType === "CARD" ? (
+              <p className="text-muted-foreground text-xs">ご利用額</p>
+            ) : (
+              <p className="text-muted-foreground text-xs">残高</p>
+            )}
             <p className="text-lg font-bold">
-              ¥{account.totalAmount.toLocaleString()}
+              {account.accountType === "CARD" ? (
+                <>¥{Math.abs(account.totalAmount).toLocaleString()} 円</>
+              ) : (
+                <>¥{account.totalAmount.toLocaleString()}</>
+              )}
             </p>
           </div>
         </div>

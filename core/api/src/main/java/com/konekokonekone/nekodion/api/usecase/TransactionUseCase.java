@@ -5,6 +5,7 @@ import com.konekokonekone.nekodion.api.mapper.TransactionItemMapper;
 import com.konekokonekone.nekodion.api.mapper.TransactionRequestMapper;
 import com.konekokonekone.nekodion.api.request.TransactionRequest;
 import com.konekokonekone.nekodion.api.response.DailyTransactionResponse;
+import com.konekokonekone.nekodion.api.response.MonthlySummaryResponse;
 import com.konekokonekone.nekodion.api.response.TotalAssetsResponse;
 import com.konekokonekone.nekodion.api.response.TransactionDetailResponse;
 import com.konekokonekone.nekodion.transaction.entity.Transaction;
@@ -64,6 +65,24 @@ public class TransactionUseCase {
     public TotalAssetsResponse getTotalAssets(String userId) {
         var totalAssets = transactionService.getTotalAssets(userId);
         return TotalAssetsResponse.builder().totalAssets(totalAssets).build();
+    }
+
+    /**
+     * 月次収支を取得
+     *
+     * @param userId ユーザーID
+     * @param year   年
+     * @param month  月
+     * @return 月次収支レスポンス
+     */
+    public MonthlySummaryResponse getMonthlySummary(String userId, int year, int month) {
+        var dto = transactionService.getMonthlySummary(userId, year, month);
+        return MonthlySummaryResponse.builder()
+                .year(dto.getYear())
+                .month(dto.getMonth())
+                .totalIncome(dto.getTotalIncome())
+                .totalExpense(dto.getTotalExpense())
+                .build();
     }
 
     /**

@@ -28,7 +28,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<Transaction> findByIdAndUserId(Long id, String userId);
 
     /**
-     * 収入合計を取得
+     * CARDを除く収入合計を取得（総資産計算用）
      */
     @Query("""
             SELECT
@@ -38,11 +38,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             WHERE
                 t.userId = :userId
                 AND t.transactionType IN ('INCOME')
+                AND t.account.accountType <> 'CARD'
             """)
-    BigDecimal sumIncome(String userId);
+    BigDecimal sumIncomeExcludingCard(String userId);
 
     /**
-     * 支出合計を取得
+     * CARDを除く支出合計を取得（総資産計算用）
      */
     @Query("""
             SELECT
@@ -52,6 +53,39 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             WHERE
                 t.userId = :userId
                 AND t.transactionType IN ('EXPENSE')
+                AND t.account.accountType <> 'CARD'
             """)
-    BigDecimal sumExpense(String userId);
+    BigDecimal sumExpenseExcludingCard(String userId);
+
+    /**
+     * 月次収入合計を取得
+     */
+    @Query("""
+            SELECT
+                COALESCE(SUM(t.amount), 0)
+            FROM
+                Transaction t
+            WHERE
+                t.userId = :userId
+                AND t.transactionType IN ('INCOME')
+                AND YEAR(t.transactionDateTime) = :year
+                AND MONTH(t.transactionDateTime) = :month
+            """)
+    BigDecimal sumIncomeByMonth(String userId, int year, int month);
+
+    /**
+     * 月次支出合計を取得
+     */
+    @Query("""
+            SELECT
+                COALESCE(SUM(t.amount), 0)
+            FROM
+                Transaction t
+            WHERE
+                t.userId = :userId
+                AND t.transactionType IN ('EXPENSE')
+                AND YEAR(t.transactionDateTime) = :year
+                AND MONTH(t.transactionDateTime) = :month
+            """)
+    BigDecimal sumExpenseByMonth(String userId, int year, int month);
 }

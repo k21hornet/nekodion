@@ -73,9 +73,15 @@ export const AccountCard = ({ accountGroup }: Props) => {
                   {account.accountName}
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-semibold">
-                    ¥{account.totalAmount.toLocaleString()}
-                  </span>
+                  {accountGroup.accountType === "カード" ? (
+                    <span className="text-sm font-semibold">
+                      ¥{Math.abs(account.totalAmount).toLocaleString()}
+                    </span>
+                  ) : (
+                    <span className="text-sm font-semibold">
+                      ¥{account.totalAmount.toLocaleString()}
+                    </span>
+                  )}
                   <ChevronRight className="text-muted-foreground h-3.5 w-3.5" />
                 </div>
               </Link>

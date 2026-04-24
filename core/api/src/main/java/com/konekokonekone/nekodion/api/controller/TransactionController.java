@@ -2,6 +2,7 @@ package com.konekokonekone.nekodion.api.controller;
 
 import com.konekokonekone.nekodion.api.request.TransactionRequest;
 import com.konekokonekone.nekodion.api.response.DailyTransactionResponse;
+import com.konekokonekone.nekodion.api.response.MonthlySummaryResponse;
 import com.konekokonekone.nekodion.api.response.TotalAssetsResponse;
 import com.konekokonekone.nekodion.api.response.TransactionDetailResponse;
 import com.konekokonekone.nekodion.api.usecase.TransactionUseCase;
@@ -32,6 +33,14 @@ public class TransactionController {
     public ResponseEntity<TotalAssetsResponse> getTotalAssets(
             @CurrentUser UserDto currentUser) {
         return ResponseEntity.ok(transactionUseCase.getTotalAssets(currentUser.getId()));
+    }
+
+    @GetMapping("/monthly-summary")
+    public ResponseEntity<MonthlySummaryResponse> getMonthlySummary(
+            @CurrentUser UserDto currentUser,
+            @RequestParam int year,
+            @RequestParam int month) {
+        return ResponseEntity.ok(transactionUseCase.getMonthlySummary(currentUser.getId(), year, month));
     }
 
     @GetMapping("/{id}")

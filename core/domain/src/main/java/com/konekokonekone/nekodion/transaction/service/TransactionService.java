@@ -3,6 +3,7 @@ package com.konekokonekone.nekodion.transaction.service;
 import com.konekokonekone.nekodion.category.service.CategoryMappingService;
 import com.konekokonekone.nekodion.category.service.CategoryService;
 import com.konekokonekone.nekodion.support.exception.EntityNotFoundException;
+import com.konekokonekone.nekodion.transaction.dto.MonthlySummaryDto;
 import com.konekokonekone.nekodion.transaction.dto.TransactionRequestDto;
 import com.konekokonekone.nekodion.transaction.entity.Transaction;
 import com.konekokonekone.nekodion.transaction.enums.TransactionType;
@@ -39,15 +40,29 @@ public class TransactionService {
     }
 
     /**
-     * 総資産を取得（収入合計 - 支出合計）
+     * 総資産を取得（CARD口座を除く収入合計 - 支出合計）
      *
      * @param userId ユーザーID
      * @return 総資産
      */
     public BigDecimal getTotalAssets(String userId) {
-        var totalIncome = transactionRepository.sumIncome(userId);
-        var totalExpense = transactionRepository.sumExpense(userId);
+        var totalIncome = transactionRepository.sumIncomeExcludingCard(userId);
+        var totalExpense = transactionRepository.sumExpenseExcludingCard(userId);
         return totalIncome.subtract(totalExpense);
+    }
+
+    /**
+     * 月次収支を取得
+     *
+     * @param userId ユーザーID
+     * @param year   年
+     * @param month  月
+     * @return 月次収支
+     */
+    public MonthlySummaryDto getMonthlySummary(String userId, int year, int month) {
+        var totalIncome = transactionRepository.sumIncomeByMonth(userId, year, month);
+        var totalExpense = transactionRepository.sumExpenseByMonth(userId, year, month);
+        return new MonthlySummaryDto(year, month, totalIncome, totalExpense);
     }
 
     /**
