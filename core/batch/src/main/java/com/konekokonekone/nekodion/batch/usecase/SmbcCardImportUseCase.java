@@ -2,6 +2,7 @@ package com.konekokonekone.nekodion.batch.usecase;
 
 import com.konekokonekone.nekodion.batch.runner.BatchResult;
 import com.konekokonekone.nekodion.batch.runner.BatchResultStatus;
+import com.konekokonekone.nekodion.category.service.CategoryMappingService;
 import com.konekokonekone.nekodion.external.gmail.dto.GmailMessage;
 import com.konekokonekone.nekodion.external.gmail.service.GmailClientService;
 import com.konekokonekone.nekodion.external.gmail.service.GmailImportLogService;
@@ -32,6 +33,8 @@ public class SmbcCardImportUseCase {
     private final GmailImportLogService gmailLogService;
 
     private final TransactionService transactionService;
+
+    private final CategoryMappingService categoryMappingService;
 
     private static final String GMAIL_QUERY_TEMPLATE = "subject:\"ご利用のお知らせ【三井住友カード】\" after:%s";
 
@@ -82,9 +85,11 @@ public class SmbcCardImportUseCase {
         var transactionDateTime = extractDate(body);
         var shopName = extractShopName(body);
         var amount = extractAmount(body);
+        var category = categoryMappingService.resolveCategory(userId, shopName, false);
 
         var dto = TransactionRequestDto.builder()
                 .accountId(account.getId())
+                .categoryId(category.getId())
                 .transactionType(TransactionType.EXPENSE.getCode())
                 .transactionName(shopName)
                 .amount(amount)

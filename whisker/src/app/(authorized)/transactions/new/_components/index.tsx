@@ -6,17 +6,19 @@ import {
   CreateTransactionActionState,
 } from "@/features/transaction/actions";
 import { AccountSummaryResponse } from "@/features/accounts/types";
+import { CategoryTypeResponse } from "@/features/category/types";
 import { TransactionForm } from "@/features/transaction/components/TransactionForm";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2 } from "lucide-react";
 
 type Props = {
   accounts: AccountSummaryResponse[];
+  categories: CategoryTypeResponse[];
 };
 
 const initialState: CreateTransactionActionState = {};
 
-export const CreateTransactionPage = ({ accounts }: Props) => {
+export const CreateTransactionPage = ({ accounts, categories }: Props) => {
   const [state, formAction, isPending] = useActionState(
     createTransactionAction,
     initialState,
@@ -46,6 +48,7 @@ export const CreateTransactionPage = ({ accounts }: Props) => {
         isPending={isPending}
         errors={state.errors}
         accounts={accounts}
+        categories={categories}
         submitLabel="記録する"
         pendingLabel="記録中..."
       />

@@ -34,7 +34,7 @@ services:
       FLYWAY_PASSWORD: pass
       FLYWAY_LOCATIONS: filesystem:/flyway/sql
     volumes:
-      - ./src/main/resources/db/migration:/flyway/sql
+      - ../../fluffy/src/main/resources/db/migration:/flyway/sql
     depends_on:
       db:
         condition: service_healthy

@@ -16,6 +16,8 @@ public class TransactionRequestDto {
 
     private Long accountId;
 
+    private Long categoryId;
+
     private String transactionType;
 
     private String transactionName;
