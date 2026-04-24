@@ -8,6 +8,7 @@ import {
 } from "@/features/transaction/actions";
 import { TransactionDetailResponse } from "@/features/transaction/types";
 import { AccountSummaryResponse } from "@/features/accounts/types";
+import { CategoryTypeResponse } from "@/features/category/types";
 import { TransactionForm } from "@/features/transaction/components/TransactionForm";
 import { Breadcrumb } from "@/components/common/Breadcrumb";
 import { Button } from "@/components/ui/button";
@@ -16,11 +17,12 @@ import { Trash2 } from "lucide-react";
 type Props = {
   transaction: TransactionDetailResponse;
   accounts: AccountSummaryResponse[];
+  categories: CategoryTypeResponse[];
 };
 
 const initialState: UpdateTransactionActionState = {};
 
-export const TransactionDetailPage = ({ transaction, accounts }: Props) => {
+export const TransactionDetailPage = ({ transaction, accounts, categories }: Props) => {
   const [state, formAction, isPending] = useActionState(
     updateTransactionAction,
     initialState,
@@ -44,12 +46,14 @@ export const TransactionDetailPage = ({ transaction, accounts }: Props) => {
         defaultValues={{
           transactionType: transaction.transactionType,
           accountId: String(transaction.accountId),
+          categoryId: String(transaction.categoryId),
           transactionName: transaction.transactionName ?? "",
           amount: transaction.amount,
           transactionDate: transaction.transactionDateTime.split("T")[0],
           description: transaction.description ?? "",
         }}
         accounts={accounts}
+        categories={categories}
         hiddenId={String(transaction.id)}
         submitLabel="更新する"
         pendingLabel="更新中..."

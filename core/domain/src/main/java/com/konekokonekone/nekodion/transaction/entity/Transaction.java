@@ -1,5 +1,6 @@
 package com.konekokonekone.nekodion.transaction.entity;
 
+import com.konekokonekone.nekodion.category.entity.Category;
 import com.konekokonekone.nekodion.transaction.entity.converter.TransactionTypeConverter;
 import com.konekokonekone.nekodion.transaction.enums.TransactionType;
 import com.konekokonekone.nekodion.support.entity.AbstractBaseEntity;
@@ -53,6 +54,10 @@ public class Transaction extends AbstractBaseEntity {
 
     @Column(name = "is_confirmed")
     private Boolean isConfirmed;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @PrePersist
     private void prePersist() {

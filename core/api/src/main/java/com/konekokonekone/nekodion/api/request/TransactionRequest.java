@@ -14,6 +14,9 @@ public class TransactionRequest {
     @NotNull
     private Long accountId;
 
+    @NotNull
+    private Long categoryId;
+
     @NotBlank
     private String transactionType;
 

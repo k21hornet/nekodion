@@ -8,6 +8,8 @@ export type CreateTransactionActionState = {
   errors?: {
     transactionType?: string;
     accountId?: string;
+    categoryId?: string;
+    transactionName?: string;
     amount?: string;
     transactionDate?: string;
     global?: string;
@@ -20,8 +22,8 @@ export async function createTransactionAction(
 ): Promise<CreateTransactionActionState> {
   const transactionType = formData.get("transactionType") as string;
   const accountId = formData.get("accountId") as string;
-  const transactionName =
-    (formData.get("transactionName") as string)?.trim() || null;
+  const categoryId = formData.get("categoryId") as string;
+  const transactionName = (formData.get("transactionName") as string)?.trim();
   const amountStr = formData.get("amount") as string;
   const transactionDate = formData.get("transactionDate") as string;
   const description = (formData.get("description") as string)?.trim() || null;
@@ -29,6 +31,8 @@ export async function createTransactionAction(
   const errors: CreateTransactionActionState["errors"] = {};
   if (!transactionType) errors.transactionType = "取引種別を選択してください";
   if (!accountId) errors.accountId = "口座を選択してください";
+  if (!categoryId) errors.categoryId = "カテゴリーを選択してください";
+  if (!transactionName) errors.transactionName = "取引名を入力してください";
   if (!amountStr || Number(amountStr) <= 0)
     errors.amount = "1以上の金額を入力してください";
   if (!transactionDate) errors.transactionDate = "取引日を入力してください";
@@ -37,6 +41,7 @@ export async function createTransactionAction(
   const result = await fetcher.post("/transactions", {
     transactionType,
     accountId: Number(accountId),
+    categoryId: Number(categoryId),
     transactionName,
     amount: Number(amountStr),
     transactionDateTime: `${transactionDate}T00:00:00`,
@@ -54,6 +59,8 @@ export type UpdateTransactionActionState = {
   errors?: {
     transactionType?: string;
     accountId?: string;
+    categoryId?: string;
+    transactionName?: string;
     amount?: string;
     transactionDate?: string;
     global?: string;
@@ -67,8 +74,8 @@ export async function updateTransactionAction(
   const id = formData.get("id") as string;
   const transactionType = formData.get("transactionType") as string;
   const accountId = formData.get("accountId") as string;
-  const transactionName =
-    (formData.get("transactionName") as string)?.trim() || null;
+  const categoryId = formData.get("categoryId") as string;
+  const transactionName = (formData.get("transactionName") as string)?.trim();
   const amountStr = formData.get("amount") as string;
   const transactionDate = formData.get("transactionDate") as string;
   const description = (formData.get("description") as string)?.trim() || null;
@@ -76,6 +83,8 @@ export async function updateTransactionAction(
   const errors: UpdateTransactionActionState["errors"] = {};
   if (!transactionType) errors.transactionType = "取引種別を選択してください";
   if (!accountId) errors.accountId = "口座を選択してください";
+  if (!categoryId) errors.categoryId = "カテゴリーを選択してください";
+  if (!transactionName) errors.transactionName = "取引名を入力してください";
   if (!amountStr || Number(amountStr) <= 0)
     errors.amount = "1以上の金額を入力してください";
   if (!transactionDate) errors.transactionDate = "取引日を入力してください";
@@ -84,7 +93,8 @@ export async function updateTransactionAction(
   const result = await fetcher.put(`/transactions/${id}`, {
     transactionType,
     accountId: Number(accountId),
-    transactionName,
+    categoryId: Number(categoryId),
+    transactionName: transactionName,
     amount: Number(amountStr),
     transactionDateTime: `${transactionDate}T00:00:00`,
     description,

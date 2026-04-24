@@ -1,5 +1,6 @@
 package com.konekokonekone.nekodion.transaction.service;
 
+import com.konekokonekone.nekodion.category.service.CategoryService;
 import com.konekokonekone.nekodion.support.exception.EntityNotFoundException;
 import com.konekokonekone.nekodion.transaction.dto.TransactionRequestDto;
 import com.konekokonekone.nekodion.transaction.entity.Transaction;
@@ -21,6 +22,8 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
 
     private final AccountRepository accountRepository;
+
+    private final CategoryService categoryService;
 
     /**
      * ユーザーの入出金一覧取得
@@ -65,10 +68,12 @@ public class TransactionService {
     public void createTransaction(String userId, TransactionRequestDto dto) {
         var account = accountRepository.findByIdAndUserId(dto.getAccountId(), userId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("口座が見つかりません。口座ID[%d]", dto.getAccountId())));
+        var category = categoryService.findAccessibleById(dto.getCategoryId(), userId);
 
         var transaction = new Transaction();
         transaction.setUserId(userId);
         transaction.setAccount(account);
+        transaction.setCategory(category);
         transaction.setTransactionType(TransactionType.codeOf(dto.getTransactionType()));
         transaction.setTransactionName(dto.getTransactionName());
         transaction.setAmount(dto.getAmount());
@@ -76,7 +81,6 @@ public class TransactionService {
         transaction.setDescription(dto.getDescription());
         transaction.setIsAggregated(true);
         transaction.setIsConfirmed(true);
-
 
         transactionRepository.save(transaction);
     }
@@ -93,8 +97,10 @@ public class TransactionService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("入出金が見つかりません。入出金ID[%d]", id)));
         var account = accountRepository.findByIdAndUserId(dto.getAccountId(), userId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("口座が見つかりません。口座ID[%d]", dto.getAccountId())));
+        var category = categoryService.findAccessibleById(dto.getCategoryId(), userId);
 
         transaction.setAccount(account);
+        transaction.setCategory(category);
         transaction.setTransactionType(TransactionType.codeOf(dto.getTransactionType()));
         transaction.setTransactionName(dto.getTransactionName());
         transaction.setAmount(dto.getAmount());

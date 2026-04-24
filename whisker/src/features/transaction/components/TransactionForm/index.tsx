@@ -1,15 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/common/FormField";
 import { AccountSummaryResponse } from "@/features/accounts/types";
 import { ACCOUNT_TYPE_LABELS } from "@/features/accounts/const";
+import { CategoryTypeResponse } from "@/features/category/types";
 
 type FormErrors = {
   global?: string;
   transactionType?: string;
   accountId?: string;
+  categoryId?: string;
+  transactionName?: string;
   amount?: string;
   transactionDate?: string;
 };
@@ -21,15 +25,16 @@ type Props = {
   defaultValues?: {
     transactionType?: string;
     accountId?: string;
+    categoryId?: string;
     transactionName?: string;
     amount?: number;
     transactionDate?: string;
     description?: string;
   };
   accounts: AccountSummaryResponse[];
+  categories: CategoryTypeResponse[];
   submitLabel: string;
   pendingLabel: string;
-  onTransactionTypeChange?: (value: string) => void;
   extraActions?: React.ReactNode;
   formRef?: React.RefObject<HTMLFormElement | null>;
   hiddenId?: string;
@@ -43,13 +48,20 @@ export const TransactionForm = ({
   errors,
   defaultValues,
   accounts,
+  categories,
   submitLabel,
   pendingLabel,
-  onTransactionTypeChange,
   extraActions,
   formRef,
   hiddenId,
 }: Props) => {
+  const [selectedType, setSelectedType] = useState(
+    defaultValues?.transactionType ?? "",
+  );
+
+  const isIncome = selectedType === "INCOME";
+  const visibleCategories = categories.filter((ct) => ct.isIncome === isIncome);
+
   return (
     <form ref={formRef} action={formAction} className="space-y-5">
       {hiddenId && <input type="hidden" name="id" value={hiddenId} />}
@@ -63,12 +75,34 @@ export const TransactionForm = ({
         <select
           name="transactionType"
           defaultValue={defaultValues?.transactionType ?? ""}
-          onChange={(e) => onTransactionTypeChange?.(e.target.value)}
+          onChange={(e) => setSelectedType(e.target.value)}
           className="border-input bg-background focus:ring-ring w-full rounded-lg border px-3 py-2 text-sm transition focus:border-transparent focus:ring-2 focus:outline-none"
         >
           <option value="">選択してください</option>
           <option value="INCOME">収入</option>
           <option value="EXPENSE">支出</option>
+        </select>
+      </FormField>
+
+      <FormField label="カテゴリー" error={errors?.categoryId}>
+        <select
+          name="categoryId"
+          defaultValue={defaultValues?.categoryId ?? ""}
+          key={selectedType}
+          className="border-input bg-background focus:ring-ring w-full rounded-lg border px-3 py-2 text-sm transition focus:border-transparent focus:ring-2 focus:outline-none"
+        >
+          <option value="">
+            {selectedType ? "選択してください" : "取引種別を先に選択してください"}
+          </option>
+          {visibleCategories.map((ct) => (
+            <optgroup key={ct.categoryTypeId} label={ct.categoryTypeName}>
+              {ct.categories.map((c) => (
+                <option key={c.categoryId} value={c.categoryId}>
+                  {c.categoryName}
+                </option>
+              ))}
+            </optgroup>
+          ))}
         </select>
       </FormField>
 
@@ -96,7 +130,7 @@ export const TransactionForm = ({
         </select>
       </FormField>
 
-      <FormField label="取引名" optional>
+      <FormField label="取引名" error={errors?.transactionName}>
         <Input
           type="text"
           name="transactionName"

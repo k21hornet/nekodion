@@ -31,5 +31,7 @@ public class DailyTransactionResponse {
         private String transactionName;
 
         private String transactionDescription;
+
+        private String categoryName;
     }
 }

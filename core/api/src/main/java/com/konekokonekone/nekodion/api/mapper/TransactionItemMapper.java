@@ -10,5 +10,6 @@ public interface TransactionItemMapper {
 
     @Mapping(target = "transactionType", source = "transactionType.code")
     @Mapping(target = "transactionDescription", source = "description")
+    @Mapping(target = "categoryName", source = "category.categoryName")
     TransactionItem toItem(Transaction transaction);
 }

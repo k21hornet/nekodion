@@ -9,6 +9,7 @@ export type TransactionItem = {
   transactionType: string;
   transactionName: string;
   transactionDescription: string;
+  categoryName: string;
 };
 
 export type TotalAssetsResponse = {
@@ -25,6 +26,7 @@ export type MonthlySummaryResponse = {
 export type TransactionDetailResponse = {
   id: number;
   accountId: number;
+  categoryId: number;
   transactionType: string;
   transactionName: string | null;
   amount: number;
