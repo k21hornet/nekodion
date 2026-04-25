@@ -3,6 +3,7 @@ import { formatDate } from "@/util/formatDate";
 import { DailyTransactionResponse } from "../../types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { TransactionCategoryIcon } from "@/components/icon/TransactionCategoryIcon";
 
 type Props = {
   transactions: DailyTransactionResponse[];
@@ -23,9 +24,14 @@ export const TransactionTable = ({ transactions }: Props) => {
                   href={`/transactions/${tx.id}`}
                   className="hover:bg-accent group flex items-center justify-between rounded-lg px-1 py-2.5 transition-colors"
                 >
-                  <span className="group-hover:text-primary min-w-0 flex-1 truncate text-sm font-medium transition-colors">
-                    {tx.transactionName ?? "（名称なし）"}
-                  </span>
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <TransactionCategoryIcon
+                      categoryTypeName={tx.categoryTypeName}
+                    />
+                    <span className="group-hover:text-primary truncate text-sm font-medium transition-colors">
+                      {tx.transactionName ?? "（名称なし）"}
+                    </span>
+                  </div>
                   <span
                     className={cn(
                       "ml-3 shrink-0 text-sm font-semibold",

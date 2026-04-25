@@ -10,6 +10,7 @@ export type TransactionItem = {
   transactionName: string;
   transactionDescription: string;
   categoryName: string;
+  categoryTypeName: string;
 };
 
 export type TotalAssetsResponse = {
