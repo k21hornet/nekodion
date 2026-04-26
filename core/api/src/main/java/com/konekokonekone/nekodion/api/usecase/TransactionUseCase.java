@@ -5,6 +5,7 @@ import com.konekokonekone.nekodion.api.mapper.TransactionItemMapper;
 import com.konekokonekone.nekodion.api.mapper.TransactionRequestMapper;
 import com.konekokonekone.nekodion.api.request.TransactionRequest;
 import com.konekokonekone.nekodion.api.response.DailyTransactionResponse;
+import com.konekokonekone.nekodion.api.response.MonthlyCategoryTypeSummaryResponse;
 import com.konekokonekone.nekodion.api.response.MonthlySummaryResponse;
 import com.konekokonekone.nekodion.api.response.TotalAssetsResponse;
 import com.konekokonekone.nekodion.api.response.TransactionDetailResponse;
@@ -83,6 +84,24 @@ public class TransactionUseCase {
                 .totalIncome(dto.getTotalIncome())
                 .totalExpense(dto.getTotalExpense())
                 .build();
+    }
+
+    /**
+     * 月次カテゴリー種別ごとの金額集計を取得
+     *
+     * @param userId ユーザーID
+     * @param year   年
+     * @param month  月
+     * @return 月次カテゴリー種別集計レスポンスリスト
+     */
+    public List<MonthlyCategoryTypeSummaryResponse> getMonthlyCategoryTypeSummary(String userId, int year, int month) {
+        return transactionService.getMonthlyCategoryTypeSummary(userId, year, month).stream()
+                .map(dto -> MonthlyCategoryTypeSummaryResponse.builder()
+                        .categoryTypeName(dto.getCategoryTypeName())
+                        .isIncome(dto.isIncome())
+                        .totalAmount(dto.getTotalAmount())
+                        .build())
+                .toList();
     }
 
     /**

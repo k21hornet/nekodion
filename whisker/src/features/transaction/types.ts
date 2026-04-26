@@ -24,6 +24,12 @@ export type MonthlySummaryResponse = {
   totalExpense: number;
 };
 
+export type MonthlyCategoryTypeSummaryItem = {
+  categoryTypeName: string;
+  isIncome: boolean;
+  totalAmount: number;
+};
+
 export type TransactionDetailResponse = {
   id: number;
   accountId: number;

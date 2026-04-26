@@ -3,6 +3,7 @@ package com.konekokonekone.nekodion.transaction.service;
 import com.konekokonekone.nekodion.category.service.CategoryMappingService;
 import com.konekokonekone.nekodion.category.service.CategoryService;
 import com.konekokonekone.nekodion.support.exception.EntityNotFoundException;
+import com.konekokonekone.nekodion.transaction.dto.CategoryTypeSummaryDto;
 import com.konekokonekone.nekodion.transaction.dto.MonthlySummaryDto;
 import com.konekokonekone.nekodion.transaction.dto.TransactionRequestDto;
 import com.konekokonekone.nekodion.transaction.entity.Transaction;
@@ -63,6 +64,24 @@ public class TransactionService {
         var totalIncome = transactionRepository.sumIncomeByMonth(userId, year, month);
         var totalExpense = transactionRepository.sumExpenseByMonth(userId, year, month);
         return new MonthlySummaryDto(year, month, totalIncome, totalExpense);
+    }
+
+    /**
+     * 月次カテゴリー種別ごとの金額集計を取得
+     *
+     * @param userId ユーザーID
+     * @param year   年
+     * @param month  月
+     * @return カテゴリー種別ごとの集計リスト
+     */
+    public List<CategoryTypeSummaryDto> getMonthlyCategoryTypeSummary(String userId, int year, int month) {
+        return transactionRepository.sumByCategoryType(userId, year, month).stream()
+                .map(row -> new CategoryTypeSummaryDto(
+                        (String) row[0],
+                        (Boolean) row[1],
+                        (BigDecimal) row[2]
+                ))
+                .toList();
     }
 
     /**

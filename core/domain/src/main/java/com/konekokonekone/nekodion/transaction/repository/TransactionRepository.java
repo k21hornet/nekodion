@@ -88,4 +88,28 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 AND MONTH(t.transactionDateTime) = :month
             """)
     BigDecimal sumExpenseByMonth(String userId, int year, int month);
+
+    /**
+     * 月次カテゴリー種別ごとの金額集計を取得
+     * [0] categoryTypeName (String), [1] isIncome (Boolean), [2] totalAmount (BigDecimal)
+     */
+    @Query("""
+            SELECT
+                ct.categoryTypeName,
+                ct.isIncome,
+                COALESCE(SUM(t.amount), 0)
+            FROM
+                Transaction t
+                JOIN t.category c
+                JOIN c.categoryType ct
+            WHERE
+                t.userId = :userId
+                AND YEAR(t.transactionDateTime) = :year
+                AND MONTH(t.transactionDateTime) = :month
+            GROUP BY
+                ct.id, ct.categoryTypeName, ct.isIncome
+            ORDER BY
+                SUM(t.amount) DESC
+            """)
+    List<Object[]> sumByCategoryType(String userId, int year, int month);
 }
