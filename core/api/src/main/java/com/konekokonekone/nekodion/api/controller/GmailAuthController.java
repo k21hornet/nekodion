@@ -4,6 +4,9 @@ import com.konekokonekone.nekodion.api.response.GmailAuthUrlResponse;
 import com.konekokonekone.nekodion.api.response.GmailStatusResponse;
 import com.konekokonekone.nekodion.api.security.CurrentUser;
 import com.konekokonekone.nekodion.api.usecase.GmailAuthUseCase;
+import com.konekokonekone.nekodion.support.exception.ExternalApiException;
+import com.konekokonekone.nekodion.support.exception.InvalidOAuthStateException;
+import com.konekokonekone.nekodion.support.exception.OAuthStateExpiredException;
 import com.konekokonekone.nekodion.user.dto.UserDto;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +43,7 @@ public class GmailAuthController {
         try {
             gmailAuthUseCase.handleCallback(code, state);
             response.sendRedirect(frontendUrl + "/settings");
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidOAuthStateException | OAuthStateExpiredException | ExternalApiException e) {
             response.sendRedirect(frontendUrl + "/settings?error=gmail_auth_failed");
         }
     }

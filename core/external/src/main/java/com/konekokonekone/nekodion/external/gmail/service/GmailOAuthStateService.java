@@ -1,5 +1,8 @@
 package com.konekokonekone.nekodion.external.gmail.service;
 
+import com.konekokonekone.nekodion.support.exception.ExternalApiException;
+import com.konekokonekone.nekodion.support.exception.InvalidOAuthStateException;
+import com.konekokonekone.nekodion.support.exception.OAuthStateExpiredException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -44,18 +47,18 @@ public class GmailOAuthStateService {
      */
     public String consumeState(String state) {
         int dotIndex = state.lastIndexOf('.');
-        if (dotIndex < 0) throw new IllegalArgumentException("Invalid OAuth state");
+        if (dotIndex < 0) throw new InvalidOAuthStateException("OAuth stateが不正です。");
 
         String payload = state.substring(0, dotIndex);
         String sig = state.substring(dotIndex + 1);
         if (!MessageDigest.isEqual(sign(payload).getBytes(StandardCharsets.UTF_8), sig.getBytes(StandardCharsets.UTF_8))) {
-            throw new IllegalArgumentException("Invalid OAuth state");
+            throw new InvalidOAuthStateException("OAuth stateが不正です。");
         }
 
         int colonIndex = payload.lastIndexOf(':');
         long expiryMs = Long.parseLong(payload.substring(colonIndex + 1));
         if (System.currentTimeMillis() > expiryMs) {
-            throw new IllegalArgumentException("OAuth state expired");
+            throw new OAuthStateExpiredException("OAuth stateの有効期限が切れています。");
         }
 
         String encodedUserId = payload.substring(0, colonIndex);
@@ -75,7 +78,7 @@ public class GmailOAuthStateService {
             return Base64.getUrlEncoder().withoutPadding()
                     .encodeToString(mac.doFinal(data.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
-            throw new RuntimeException("HMAC signing failed", e);
+            throw new ExternalApiException("HMAC署名に失敗しました。", e);
         }
     }
 }

@@ -2,6 +2,7 @@ package com.konekokonekone.nekodion.api.usecase;
 
 import com.konekokonekone.nekodion.api.response.GmailAuthUrlResponse;
 import com.konekokonekone.nekodion.api.response.GmailStatusResponse;
+import com.konekokonekone.nekodion.support.exception.ExternalApiException;
 import com.konekokonekone.nekodion.external.gmail.service.GmailOAuthService;
 import com.konekokonekone.nekodion.external.gmail.service.GmailOAuthStateService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class GmailAuthUseCase {
         try {
             oAuthService.exchangeCodeForToken(userId, code, redirectUri);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to exchange Gmail OAuth code", e);
+            throw new ExternalApiException("Gmail OAuthコードの交換に失敗しました。", e);
         }
     }
 
@@ -57,7 +58,7 @@ public class GmailAuthUseCase {
                     .connected(oAuthService.isAuthorized(userId))
                     .build();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to check Gmail auth status", e);
+            throw new ExternalApiException("Gmailの認証状態確認に失敗しました。", e);
         }
     }
 }

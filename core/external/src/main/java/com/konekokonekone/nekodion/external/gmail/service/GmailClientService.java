@@ -7,6 +7,8 @@ import com.google.api.services.gmail.model.Message;
 import com.google.api.services.gmail.model.MessagePart;
 import com.google.api.services.gmail.model.MessagePartHeader;
 import com.konekokonekone.nekodion.external.gmail.dto.GmailMessage;
+import com.konekokonekone.nekodion.support.exception.ExternalApiException;
+import com.konekokonekone.nekodion.support.exception.GmailNotAuthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +37,7 @@ public class GmailClientService {
         try {
             Credential credential = oAuthService.loadCredential(userId);
             if (credential == null) {
-                throw new IllegalStateException("User not authorized. userId=" + userId);
+                throw new GmailNotAuthorizedException(String.format("Gmailの認可がありません。ユーザーID[%s]", userId));
             }
             Gmail gmail = new Gmail.Builder(oAuthService.getHttpTransport(), JSON_FACTORY, credential)
                     .setApplicationName("nekodion")
@@ -56,10 +58,10 @@ public class GmailClientService {
                 result.add(toGmailMessage(detail));
             }
             return result;
-        } catch (IllegalStateException e) {
+        } catch (GmailNotAuthorizedException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Gmailの取得に失敗しました。 ユーザーID[%s]", userId), e);
+            throw new ExternalApiException(String.format("Gmailの取得に失敗しました。ユーザーID[%s]", userId), e);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.konekokonekone.nekodion.external.gmail.crypto;
 
+import com.konekokonekone.nekodion.support.exception.ExternalApiException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +43,7 @@ public class TokenEncryptor {
             System.arraycopy(ciphertext, 0, result, IV_LENGTH_BYTES, ciphertext.length);
             return Base64.getEncoder().encodeToString(result);
         } catch (Exception e) {
-            throw new RuntimeException("Token encryption failed", e);
+            throw new ExternalApiException("トークンの暗号化に失敗しました。", e);
         }
     }
 
@@ -58,7 +59,7 @@ public class TokenEncryptor {
             cipher.init(Cipher.DECRYPT_MODE, key, new GCMParameterSpec(TAG_LENGTH_BITS, iv));
             return new String(cipher.doFinal(ciphertext));
         } catch (Exception e) {
-            throw new RuntimeException("Token decryption failed", e);
+            throw new ExternalApiException("トークンの復号化に失敗しました。", e);
         }
     }
 }
