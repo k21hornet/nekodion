@@ -29,4 +29,6 @@ public class TransactionDetailResponse {
     private LocalDateTime transactionDateTime;
 
     private String description;
+
+    private Boolean isAggregated;
 }

@@ -31,4 +31,6 @@ public class TransactionRequest {
     private LocalDateTime transactionDateTime;
 
     private String description;
+
+    private Boolean isAggregated;
 }

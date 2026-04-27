@@ -27,4 +27,6 @@ public class TransactionRequestDto {
     private LocalDateTime transactionDateTime;
 
     private String description;
+
+    private Boolean isAggregated;
 }

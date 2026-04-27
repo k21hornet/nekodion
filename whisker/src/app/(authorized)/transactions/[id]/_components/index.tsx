@@ -51,6 +51,7 @@ export const TransactionDetailPage = ({ transaction, accounts, categories }: Pro
           amount: transaction.amount,
           transactionDate: transaction.transactionDateTime.split("T")[0],
           description: transaction.description ?? "",
+          isAggregated: transaction.isAggregated,
         }}
         accounts={accounts}
         categories={categories}

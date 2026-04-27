@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { FormField } from "@/components/common/FormField";
 import { AccountSummaryResponse } from "@/features/accounts/types";
 import { ACCOUNT_TYPE_LABELS } from "@/features/accounts/const";
@@ -30,6 +31,7 @@ type Props = {
     amount?: number;
     transactionDate?: string;
     description?: string;
+    isAggregated?: boolean;
   };
   accounts: AccountSummaryResponse[];
   categories: CategoryTypeResponse[];
@@ -57,6 +59,9 @@ export const TransactionForm = ({
 }: Props) => {
   const [selectedType, setSelectedType] = useState(
     defaultValues?.transactionType ?? "",
+  );
+  const [isAggregated, setIsAggregated] = useState(
+    defaultValues?.isAggregated ?? true,
   );
 
   const isIncome = selectedType === "INCOME";
@@ -167,6 +172,20 @@ export const TransactionForm = ({
           defaultValue={defaultValues?.description ?? ""}
         />
       </FormField>
+
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">計算対象</span>
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={isAggregated}
+            onCheckedChange={setIsAggregated}
+          />
+          <span className="text-muted-foreground text-sm">
+            {isAggregated ? "ON" : "OFF"}
+          </span>
+        </div>
+      </div>
+      <input type="hidden" name="isAggregated" value={isAggregated ? "true" : "false"} />
 
       <div className="flex flex-col gap-3 pt-1">
         <Button type="submit" disabled={isPending} className="w-full">

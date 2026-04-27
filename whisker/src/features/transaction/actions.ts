@@ -58,6 +58,7 @@ export async function createTransactionAction(
   const amountStr = formData.get("amount") as string;
   const transactionDate = formData.get("transactionDate") as string;
   const description = (formData.get("description") as string)?.trim() || null;
+  const isAggregated = formData.get("isAggregated") !== "false";
 
   const errors: CreateTransactionActionState["errors"] = {};
   if (!transactionType) errors.transactionType = "取引種別を選択してください";
@@ -77,6 +78,7 @@ export async function createTransactionAction(
     amount: Number(amountStr),
     transactionDateTime: `${transactionDate}T00:00:00`,
     description,
+    isAggregated,
   });
 
   if ("error" in result) {
@@ -110,6 +112,7 @@ export async function updateTransactionAction(
   const amountStr = formData.get("amount") as string;
   const transactionDate = formData.get("transactionDate") as string;
   const description = (formData.get("description") as string)?.trim() || null;
+  const isAggregated = formData.get("isAggregated") !== "false";
 
   const errors: UpdateTransactionActionState["errors"] = {};
   if (!transactionType) errors.transactionType = "取引種別を選択してください";
@@ -129,6 +132,7 @@ export async function updateTransactionAction(
     amount: Number(amountStr),
     transactionDateTime: `${transactionDate}T00:00:00`,
     description,
+    isAggregated,
   });
 
   if ("error" in result) {

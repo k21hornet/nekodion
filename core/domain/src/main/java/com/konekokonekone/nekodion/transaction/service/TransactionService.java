@@ -116,7 +116,7 @@ public class TransactionService {
         transaction.setAmount(dto.getAmount());
         transaction.setTransactionDateTime(dto.getTransactionDateTime());
         transaction.setDescription(dto.getDescription());
-        transaction.setIsAggregated(true);
+        transaction.setIsAggregated(dto.getIsAggregated() != null ? dto.getIsAggregated() : true);
         transaction.setIsConfirmed(true);
 
         transactionRepository.save(transaction);
@@ -149,6 +149,7 @@ public class TransactionService {
         transaction.setAmount(dto.getAmount());
         transaction.setTransactionDateTime(dto.getTransactionDateTime());
         transaction.setDescription(dto.getDescription());
+        transaction.setIsAggregated(dto.getIsAggregated() != null ? dto.getIsAggregated() : transaction.getIsAggregated());
 
         transactionRepository.save(transaction);
     }

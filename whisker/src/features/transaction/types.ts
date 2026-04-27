@@ -39,4 +39,5 @@ export type TransactionDetailResponse = {
   amount: number;
   transactionDateTime: string;
   description: string | null;
+  isAggregated: boolean;
 };

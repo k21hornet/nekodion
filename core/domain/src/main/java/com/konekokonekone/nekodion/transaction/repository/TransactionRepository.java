@@ -70,6 +70,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 AND t.transactionType IN ('INCOME')
                 AND YEAR(t.transactionDateTime) = :year
                 AND MONTH(t.transactionDateTime) = :month
+                AND t.isAggregated = true
             """)
     BigDecimal sumIncomeByMonth(String userId, int year, int month);
 
@@ -86,6 +87,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 AND t.transactionType IN ('EXPENSE')
                 AND YEAR(t.transactionDateTime) = :year
                 AND MONTH(t.transactionDateTime) = :month
+                AND t.isAggregated = true
             """)
     BigDecimal sumExpenseByMonth(String userId, int year, int month);
 
@@ -106,6 +108,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 t.userId = :userId
                 AND YEAR(t.transactionDateTime) = :year
                 AND MONTH(t.transactionDateTime) = :month
+                AND t.isAggregated = true
             GROUP BY
                 ct.id, ct.categoryTypeName, ct.isIncome
             ORDER BY
