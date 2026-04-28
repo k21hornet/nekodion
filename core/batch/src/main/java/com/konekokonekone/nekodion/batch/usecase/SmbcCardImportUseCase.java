@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -63,7 +64,12 @@ public class SmbcCardImportUseCase {
             return;
         }
 
+        var userStartedAt = user.getCreatedAt().atZone(ZoneId.of("Asia/Tokyo")).toInstant();
         for (GmailMessage message : messages) {
+            if (message.getSentAt().toInstant().isBefore(userStartedAt)) {
+                result.add(BatchResultStatus.SKIP);
+                continue;
+            }
             if (gmailLogService.isAlreadyImported(userId, message.getId())) {
                 result.add(BatchResultStatus.SKIP);
                 continue;

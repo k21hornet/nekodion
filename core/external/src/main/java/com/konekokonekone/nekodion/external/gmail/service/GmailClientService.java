@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -22,6 +25,8 @@ import java.util.List;
 public class GmailClientService {
 
     private static final GsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+
+    private static final ZonedDateTime EPOCH = ZonedDateTime.parse("1970-01-01T00:00:00Z");
 
     private final GmailOAuthService oAuthService;
 
@@ -77,7 +82,16 @@ public class GmailClientService {
             }
         }
         String body = extractBody(message.getPayload());
-        return new GmailMessage(message.getId(), subject, from, date, body);
+        ZonedDateTime sentAt = parseSentAt(date);
+        return new GmailMessage(message.getId(), subject, from, date, body, sentAt);
+    }
+
+    private ZonedDateTime parseSentAt(String date) {
+        try {
+            return ZonedDateTime.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME);
+        } catch (DateTimeParseException e) {
+            return EPOCH;
+        }
     }
 
     private String extractBody(MessagePart part) {
