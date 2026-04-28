@@ -4,6 +4,8 @@ import com.konekokonekone.nekodion.batch.runner.BatchResult;
 import com.konekokonekone.nekodion.batch.runner.BatchResultStatus;
 import com.konekokonekone.nekodion.batch.usecase.JcbCardImportUseCase;
 import com.konekokonekone.nekodion.batch.usecase.SmbcBankDepositImportUseCase;
+import com.konekokonekone.nekodion.batch.usecase.SmbcBankDirectDebitImportUseCase;
+import com.konekokonekone.nekodion.batch.usecase.SmbcBankWithdrawalImportUseCase;
 import com.konekokonekone.nekodion.batch.usecase.SmbcCardImportUseCase;
 import com.konekokonekone.nekodion.external.gmail.entity.GmailCredentialEntity;
 import com.konekokonekone.nekodion.external.gmail.repository.GmailCredentialRepository;
@@ -32,13 +34,15 @@ public class GmailImportJob implements BatchJob {
 
     private final SmbcBankDepositImportUseCase smbcBankDepositImportUseCase;
 
+    private final SmbcBankWithdrawalImportUseCase smbcBankWithdrawalImportUseCase;
+
+    private final SmbcBankDirectDebitImportUseCase smbcBankDirectDebitImportUseCase;
+
     private final SmbcCardImportUseCase smbcCardImportUseCase;
 
     private final JcbCardImportUseCase jcbCardImportUseCase;
 
-    private static final long SMBC_BANK_DEPOSIT_TEMPLATE_ID = 1L; // 振込入金
-
-//    private static final long SMBC_BANK_WITHDRAWAL_TEMPLATE_ID = 1L; // 出金
+    private static final long SMBC_BANK_TEMPLATE_ID = 1L;
 
     private static final long SMBC_CARD_TEMPLATE_ID = 4L;
 
@@ -78,8 +82,10 @@ public class GmailImportJob implements BatchJob {
                 smbcCardImportUseCase.execute(user, account, result);
             } else if (templateId == JCB_CARD_TEMPLATE_ID) {
                 jcbCardImportUseCase.execute(user, account, result);
-            } else if (templateId == SMBC_BANK_DEPOSIT_TEMPLATE_ID) {
-                 smbcBankDepositImportUseCase.execute(user, account, result);
+            } else if (templateId == SMBC_BANK_TEMPLATE_ID) {
+                smbcBankDepositImportUseCase.execute(user, account, result);
+                smbcBankWithdrawalImportUseCase.execute(user, account, result);
+                smbcBankDirectDebitImportUseCase.execute(user, account, result);
             }
         }
     }
