@@ -30,6 +30,10 @@ export type MonthlyCategoryTypeSummaryItem = {
   totalAmount: number;
 };
 
+export type UnreadCountResponse = {
+  count: number;
+};
+
 export type TransactionDetailResponse = {
   id: number;
   accountId: number;

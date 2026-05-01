@@ -9,6 +9,7 @@ import com.konekokonekone.nekodion.api.response.MonthlyCategoryTypeSummaryRespon
 import com.konekokonekone.nekodion.api.response.MonthlySummaryResponse;
 import com.konekokonekone.nekodion.api.response.TotalAssetsResponse;
 import com.konekokonekone.nekodion.api.response.TransactionDetailResponse;
+import com.konekokonekone.nekodion.api.response.UnreadCountResponse;
 import com.konekokonekone.nekodion.transaction.entity.Transaction;
 import com.konekokonekone.nekodion.transaction.service.TransactionService;
 import lombok.RequiredArgsConstructor;
@@ -114,6 +115,53 @@ public class TransactionUseCase {
     public TransactionDetailResponse getTransaction(Long id, String userId) {
         var transaction = transactionService.findByIdAndUserId(id, userId);
         return transactionDetailResponseMapper.toResponse(transaction);
+    }
+
+    /**
+     * 未読の入出金一覧取得
+     *
+     * @param userId ユーザーID
+     * @return 日付ごとの未読入出金一覧
+     */
+    public List<DailyTransactionResponse> getUnreadTransactions(String userId) {
+        var transactions = transactionService.findUnreadByUserId(userId);
+
+        var grouped = transactions.stream()
+                .collect(Collectors.groupingBy(t -> t.getTransactionDateTime().toLocalDate()));
+        return grouped.entrySet().stream()
+                .sorted(Map.Entry.<LocalDate, List<Transaction>>comparingByKey().reversed())
+                .map(e -> {
+                    var date = e.getKey().atStartOfDay();
+                    var transactionResponses = e.getValue().stream()
+                            .map(transactionItemMapper::toItem)
+                            .toList();
+                    return DailyTransactionResponse.builder()
+                            .transactionDateTime(date)
+                            .dailyTransactions(transactionResponses)
+                            .build();
+                }).toList();
+    }
+
+    /**
+     * 未読の入出金件数取得
+     *
+     * @param userId ユーザーID
+     * @return 未読件数レスポンス
+     */
+    public UnreadCountResponse getUnreadCount(String userId) {
+        return UnreadCountResponse.builder()
+                .count(transactionService.countUnreadByUserId(userId))
+                .build();
+    }
+
+    /**
+     * 指定IDの入出金を既読にする
+     *
+     * @param userId ユーザーID
+     * @param ids 既読にする入出金IDリスト
+     */
+    public void markAsRead(String userId, List<Long> ids) {
+        transactionService.markAsRead(userId, ids);
     }
 
     /**

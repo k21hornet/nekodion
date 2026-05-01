@@ -29,4 +29,6 @@ public class TransactionRequestDto {
     private String description;
 
     private Boolean isAggregated;
+
+    private Boolean isRead;
 }

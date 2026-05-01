@@ -17,6 +17,10 @@ export const fetcher = {
     return await this._call("PUT", path, body, accessToken);
   },
 
+  async patch(path: string, body: unknown, accessToken?: string) {
+    return await this._call("PATCH", path, body, accessToken);
+  },
+
   async delete(path: string, accessToken?: string) {
     return await this._call("DELETE", path, {}, accessToken);
   },

@@ -4,8 +4,10 @@ import com.konekokonekone.nekodion.api.request.TransactionRequest;
 import com.konekokonekone.nekodion.api.response.DailyTransactionResponse;
 import com.konekokonekone.nekodion.api.response.MonthlyCategoryTypeSummaryResponse;
 import com.konekokonekone.nekodion.api.response.MonthlySummaryResponse;
+import com.konekokonekone.nekodion.api.request.MarkAsReadRequest;
 import com.konekokonekone.nekodion.api.response.TotalAssetsResponse;
 import com.konekokonekone.nekodion.api.response.TransactionDetailResponse;
+import com.konekokonekone.nekodion.api.response.UnreadCountResponse;
 import com.konekokonekone.nekodion.api.usecase.TransactionUseCase;
 import com.konekokonekone.nekodion.api.security.CurrentUser;
 import com.konekokonekone.nekodion.user.dto.UserDto;
@@ -50,6 +52,26 @@ public class TransactionController {
             @RequestParam int year,
             @RequestParam int month) {
         return ResponseEntity.ok(transactionUseCase.getMonthlyCategoryTypeSummary(currentUser.getId(), year, month));
+    }
+
+    @GetMapping("/unread")
+    public ResponseEntity<List<DailyTransactionResponse>> getUnreadTransactions(
+            @CurrentUser UserDto currentUser) {
+        return ResponseEntity.ok(transactionUseCase.getUnreadTransactions(currentUser.getId()));
+    }
+
+    @GetMapping("/unread-count")
+    public ResponseEntity<UnreadCountResponse> getUnreadCount(
+            @CurrentUser UserDto currentUser) {
+        return ResponseEntity.ok(transactionUseCase.getUnreadCount(currentUser.getId()));
+    }
+
+    @PatchMapping("/read-all")
+    public ResponseEntity<Void> markAllAsRead(
+            @CurrentUser UserDto currentUser,
+            @RequestBody @Validated MarkAsReadRequest request) {
+        transactionUseCase.markAsRead(currentUser.getId(), request.getTransactionIds());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")

@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -98,6 +100,36 @@ public class TransactionService {
     }
 
     /**
+     * 未読の入出金一覧取得
+     *
+     * @param userId ユーザーID
+     * @return 未読の入出金一覧
+     */
+    public List<Transaction> findUnreadByUserId(String userId) {
+        return transactionRepository.findUnreadByUserId(userId);
+    }
+
+    /**
+     * 未読の入出金件数取得
+     *
+     * @param userId ユーザーID
+     * @return 未読件数
+     */
+    public long countUnreadByUserId(String userId) {
+        return transactionRepository.countUnreadByUserId(userId);
+    }
+
+    /**
+     * 指定IDの入出金を既読にする
+     *
+     * @param userId ユーザーID
+     * @param ids 既読にする入出金IDリスト
+     */
+    public void markAsRead(String userId, List<Long> ids) {
+        transactionRepository.markAsReadByIds(userId, ids);
+    }
+
+    /**
      * 入出金記録
      *
      * @param userId ユーザーID
@@ -119,6 +151,7 @@ public class TransactionService {
         transaction.setDescription(dto.getDescription());
         transaction.setIsAggregated(dto.getIsAggregated() != null ? dto.getIsAggregated() : true);
         transaction.setIsConfirmed(true);
+        transaction.setIsRead(dto.getIsRead() != null ? dto.getIsRead() : true);
 
         transactionRepository.save(transaction);
     }

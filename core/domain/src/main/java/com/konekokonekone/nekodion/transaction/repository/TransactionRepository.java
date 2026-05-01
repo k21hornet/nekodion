@@ -2,6 +2,7 @@ package com.konekokonekone.nekodion.transaction.repository;
 
 import com.konekokonekone.nekodion.transaction.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
@@ -11,7 +12,7 @@ import java.util.Optional;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     /**
-     * 入出金一覧取得
+     * 既読の入出金一覧取得（通常一覧用）
      */
     @Query("""
             SELECT
@@ -20,10 +21,56 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 Transaction t
             WHERE
                 t.userId = :userId
+                AND t.isRead = true
             ORDER BY
                 t.transactionDateTime DESC
             """)
     List<Transaction> findByUserId(String userId);
+
+    /**
+     * 未読の入出金一覧取得
+     */
+    @Query("""
+            SELECT
+                t
+            FROM
+                Transaction t
+            WHERE
+                t.userId = :userId
+                AND t.isRead = false
+            ORDER BY
+                t.transactionDateTime DESC
+            """)
+    List<Transaction> findUnreadByUserId(String userId);
+
+    /**
+     * 未読の入出金件数取得
+     */
+    @Query("""
+            SELECT
+                COUNT(t)
+            FROM
+                Transaction t
+            WHERE
+                t.userId = :userId
+                AND t.isRead = false
+            """)
+    long countUnreadByUserId(String userId);
+
+    /**
+     * 指定IDの入出金を既読にする（ユーザー所有確認込み）
+     */
+    @Modifying
+    @Query("""
+            UPDATE
+                Transaction t
+            SET
+                t.isRead = true
+            WHERE
+                t.userId = :userId
+                AND t.id IN :ids
+            """)
+    void markAsReadByIds(String userId, List<Long> ids);
 
     Optional<Transaction> findByIdAndUserId(Long id, String userId);
 

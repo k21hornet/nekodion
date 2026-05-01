@@ -17,3 +17,15 @@ export async function getMonthlySummary(year: number, month: number) {
 export async function getTransaction(id: number) {
   return await fetcher.get(`/transactions/${id}`);
 }
+
+export async function getUnreadTransactions() {
+  return await fetcher.get("/transactions/unread");
+}
+
+export async function getUnreadCount() {
+  return await fetcher.get("/transactions/unread-count");
+}
+
+export async function markAllAsRead() {
+  return await fetcher.patch("/transactions/read-all", {});
+}

@@ -55,6 +55,9 @@ public class Transaction extends AbstractBaseEntity {
     @Column(name = "is_confirmed")
     private Boolean isConfirmed;
 
+    @Column(name = "is_read")
+    private Boolean isRead;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;

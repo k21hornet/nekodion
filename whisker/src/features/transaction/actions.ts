@@ -146,3 +146,8 @@ export async function deleteTransactionAction(id: number): Promise<void> {
   await fetcher.delete(`/transactions/${id}`);
   redirect("/transactions");
 }
+
+export async function markAllAsReadAction(ids: number[]): Promise<void> {
+  await fetcher.patch("/transactions/read-all", { transactionIds: ids });
+  redirect("/transactions");
+}

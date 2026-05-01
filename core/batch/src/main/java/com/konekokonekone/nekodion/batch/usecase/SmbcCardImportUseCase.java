@@ -100,6 +100,7 @@ public class SmbcCardImportUseCase {
                 .transactionName(shopName)
                 .amount(amount)
                 .transactionDateTime(transactionDateTime)
+                .isRead(false)
                 .build();
 
         transactionService.createTransaction(userId, dto);

@@ -112,6 +112,7 @@ public class SmbcBankDirectDebitImportUseCase {
                     .amount(item.amount)
                     .transactionDateTime(debitDate)
                     .isAggregated(item.isAggregated)
+                    .isRead(false)
                     .build();
             transactionService.createTransaction(userId, dto);
         }
