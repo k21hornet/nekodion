@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getCategoryIconConfig } from "@/features/category/const";
+import { ExpensePieChart } from "@/features/transaction/components/ExpensePieChart";
 import {
   getMonthlyDataAction,
   MonthlyPageData,
@@ -39,19 +40,31 @@ function generateMonthOptions(): MonthOption[] {
 
 const MONTH_OPTIONS = generateMonthOptions();
 
-export const MonthlyPage = () => {
+type Props = { initialData: MonthlyPageData };
+
+export const MonthlyPage = ({ initialData }: Props) => {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
-  const [data, setData] = useState<MonthlyPageData | null>(null);
+  const [data, setData] = useState<MonthlyPageData>(initialData);
+  const [chartKey, setChartKey] = useState(0);
   const [isPending, startTransition] = useTransition();
+  const isFirstRender = useRef(true);
 
-  useEffect(() => {
+  const fetchMonth = (y: number, m: number) => {
+    setYear(y);
+    setMonth(m);
     startTransition(async () => {
-      const result = await getMonthlyDataAction(year, month);
+      const result = await getMonthlyDataAction(y, m);
       setData(result);
+      setChartKey((k) => k + 1);
     });
-  }, [year, month]);
+  };
+
+  // 初回マウント時の重複フェッチを防ぐ
+  if (isFirstRender.current) {
+    isFirstRender.current = false;
+  }
 
   const currentIndex = MONTH_OPTIONS.findIndex(
     (o) => o.year === year && o.month === month,
@@ -59,34 +72,30 @@ export const MonthlyPage = () => {
   const canGoPrev = currentIndex < MONTH_OPTIONS.length - 1;
   const canGoNext = currentIndex > 0;
 
-  const goToPrev = () => {
-    const prev = MONTH_OPTIONS[currentIndex + 1];
-    setYear(prev.year);
-    setMonth(prev.month);
-  };
-
-  const goToNext = () => {
-    const next = MONTH_OPTIONS[currentIndex - 1];
-    setYear(next.year);
-    setMonth(next.month);
-  };
+  const goToPrev = () =>
+    fetchMonth(
+      MONTH_OPTIONS[currentIndex + 1].year,
+      MONTH_OPTIONS[currentIndex + 1].month,
+    );
+  const goToNext = () =>
+    fetchMonth(
+      MONTH_OPTIONS[currentIndex - 1].year,
+      MONTH_OPTIONS[currentIndex - 1].month,
+    );
 
   const handleSelectChange = (value: string) => {
     const [y, m] = value.split("-").map(Number);
-    setYear(y);
-    setMonth(m);
+    fetchMonth(y, m);
   };
 
-  const summary = data?.summary;
-  const balance = summary
-    ? summary.totalIncome - summary.totalExpense
-    : 0;
+  const summary = data.summary;
+  const balance = summary.totalIncome - summary.totalExpense;
 
-  const incomeItems = (data?.categoryTypeSummaries ?? [])
+  const incomeItems = data.categoryTypeSummaries
     .filter((item) => item.isIncome)
     .sort((a, b) => b.totalAmount - a.totalAmount);
 
-  const expenseItems = (data?.categoryTypeSummaries ?? [])
+  const expenseItems = data.categoryTypeSummaries
     .filter((item) => !item.isIncome)
     .sort((a, b) => b.totalAmount - a.totalAmount);
 
@@ -114,7 +123,10 @@ export const MonthlyPage = () => {
           </SelectTrigger>
           <SelectContent>
             {MONTH_OPTIONS.map((o) => (
-              <SelectItem key={`${o.year}-${o.month}`} value={`${o.year}-${o.month}`}>
+              <SelectItem
+                key={`${o.year}-${o.month}`}
+                value={`${o.year}-${o.month}`}
+              >
                 {o.label}
               </SelectItem>
             ))}
@@ -132,68 +144,78 @@ export const MonthlyPage = () => {
         </Button>
       </div>
 
-      {/* 収支サマリー */}
-      <Card className="shadow-sm">
-        <CardContent className="py-3">
-          <p className="text-sm font-semibold text-muted-foreground mb-2">
-            {month}月の収支
-          </p>
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div>
-              <p className="text-xs text-muted-foreground">収入</p>
-              <p className="text-sm font-bold text-blue-600">
-                ¥{(summary?.totalIncome ?? 0).toLocaleString()}
+      {/* データ表示（月変更中は半透明） */}
+      <div className={isPending ? "opacity-50" : ""}>
+        <div className="space-y-4">
+          {/* 収支サマリー */}
+          <Card className="shadow-sm">
+            <CardContent className="py-3">
+              <p className="text-muted-foreground mb-2 text-sm font-semibold">
+                {month}月の収支
               </p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">支出</p>
-              <p className="text-sm font-bold text-red-500">
-                ¥{(summary?.totalExpense ?? 0).toLocaleString()}
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div>
+                  <p className="text-muted-foreground text-xs">収入</p>
+                  <p className="text-sm font-bold text-blue-600">
+                    ¥{summary.totalIncome.toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-xs">支出</p>
+                  <p className="text-sm font-bold text-red-500">
+                    ¥{summary.totalExpense.toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-xs">収支</p>
+                  <p
+                    className={`text-sm font-bold ${
+                      balance >= 0 ? "text-blue-600" : "text-red-500"
+                    }`}
+                  >
+                    {balance >= 0 ? "+" : ""}¥{balance.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 収入カテゴリー種別テーブル */}
+          {incomeItems.length > 0 && (
+            <Card className="shadow-sm">
+              <CardContent className="py-3">
+                <p className="text-muted-foreground mb-3 text-sm font-semibold">
+                  収入の内訳
+                </p>
+                <CategoryTypeTable items={incomeItems} />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 支出カテゴリー種別テーブル */}
+          {expenseItems.length > 0 && (
+            <Card className="shadow-sm">
+              <CardContent className="py-3">
+                <p className="text-muted-foreground mb-3 text-sm font-semibold">
+                  支出の内訳
+                </p>
+                <ExpensePieChart key={chartKey} items={expenseItems} />
+                <div className="mt-3">
+                  <CategoryTypeTable items={expenseItems} />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {!isPending &&
+            incomeItems.length === 0 &&
+            expenseItems.length === 0 && (
+              <p className="text-muted-foreground py-4 text-center text-sm">
+                この月のデータはありません
               </p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">収支</p>
-              <p
-                className={`text-sm font-bold ${
-                  balance >= 0 ? "text-blue-600" : "text-red-500"
-                }`}
-              >
-                {balance >= 0 ? "+" : ""}¥{balance.toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* 収入カテゴリー種別テーブル */}
-      {incomeItems.length > 0 && (
-        <Card className="shadow-sm">
-          <CardContent className="py-3">
-            <p className="text-sm font-semibold text-muted-foreground mb-3">
-              収入の内訳
-            </p>
-            <CategoryTypeTable items={incomeItems} />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* 支出カテゴリー種別テーブル */}
-      {expenseItems.length > 0 && (
-        <Card className="shadow-sm">
-          <CardContent className="py-3">
-            <p className="text-sm font-semibold text-muted-foreground mb-3">
-              支出の内訳
-            </p>
-            <CategoryTypeTable items={expenseItems} />
-          </CardContent>
-        </Card>
-      )}
-
-      {!isPending && data && incomeItems.length === 0 && expenseItems.length === 0 && (
-        <p className="text-muted-foreground py-4 text-center text-sm">
-          この月のデータはありません
-        </p>
-      )}
+            )}
+        </div>
+      </div>
     </div>
   );
 };
@@ -208,10 +230,7 @@ const CategoryTypeTable = ({ items }: CategoryTypeTableProps) => {
       {items.map((item) => {
         const { Icon, bgColor } = getCategoryIconConfig(item.categoryTypeName);
         return (
-          <div
-            key={item.categoryTypeName}
-            className="flex items-center gap-3"
-          >
+          <div key={item.categoryTypeName} className="flex items-center gap-3">
             <div
               className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${bgColor}`}
             >

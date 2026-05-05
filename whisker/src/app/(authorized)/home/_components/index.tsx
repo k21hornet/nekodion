@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { TransactionTable } from "@/features/transaction/components/TransactionTable";
+import { ExpensePieChart } from "@/features/transaction/components/ExpensePieChart";
 import {
   TotalAssetsResponse,
   DailyTransactionResponse,
@@ -15,11 +16,18 @@ type Props = {
   transactions: DailyTransactionResponse[];
   totalAssets: TotalAssetsResponse;
   monthlySummary: MonthlySummaryResponse;
+  expenseItems: { categoryTypeName: string; totalAmount: number }[];
 };
 
-export const HomePage = ({ transactions, totalAssets, monthlySummary }: Props) => {
+export const HomePage = ({
+  transactions,
+  totalAssets,
+  monthlySummary,
+  expenseItems,
+}: Props) => {
   const limitedTransactions = transactions.slice(0, 3); // 直近日の入出金を表示
-  const monthlyBalance = monthlySummary.totalIncome - monthlySummary.totalExpense;
+  const monthlyBalance =
+    monthlySummary.totalIncome - monthlySummary.totalExpense;
 
   return (
     <div className="space-y-4">
@@ -34,36 +42,47 @@ export const HomePage = ({ transactions, totalAssets, monthlySummary }: Props) =
 
       <Card className="shadow-sm">
         <CardContent className="py-3">
-          <p className="text-sm font-semibold text-muted-foreground mb-2">
+          <p className="text-muted-foreground mb-2 text-sm font-semibold">
             {monthlySummary.month}月の収支
           </p>
           <div className="grid grid-cols-3 gap-2 text-center">
             <div>
-              <p className="text-xs text-muted-foreground">収入</p>
+              <p className="text-muted-foreground text-xs">収入</p>
               <p className="text-sm font-bold text-blue-600">
                 ¥{monthlySummary.totalIncome.toLocaleString()}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">支出</p>
+              <p className="text-muted-foreground text-xs">支出</p>
               <p className="text-sm font-bold text-red-500">
                 ¥{monthlySummary.totalExpense.toLocaleString()}
               </p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">収支</p>
+              <p className="text-muted-foreground text-xs">収支</p>
               <p
                 className={`text-sm font-bold ${
                   monthlyBalance >= 0 ? "text-blue-600" : "text-red-500"
                 }`}
               >
-                {monthlyBalance >= 0 ? "+" : ""}
-                ¥{monthlyBalance.toLocaleString()}
+                {monthlyBalance >= 0 ? "+" : ""}¥
+                {monthlyBalance.toLocaleString()}
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {expenseItems.length > 0 && (
+        <Card className="shadow-sm">
+          <CardContent className="py-3">
+            <p className="text-muted-foreground mb-2 text-sm font-semibold">
+              {monthlySummary.month}月の支出内訳
+            </p>
+            <ExpensePieChart items={expenseItems} />
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="shadow-sm">
         <CardHeader className="pb-3">

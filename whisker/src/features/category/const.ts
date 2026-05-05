@@ -52,3 +52,27 @@ export const getCategoryIconConfig = (
 ): CategoryIconConfig => {
   return CATEGORY_ICON_MAP[categoryTypeName] ?? DEFAULT_ICON_CONFIG;
 };
+
+const CATEGORY_COLOR_MAP: Record<string, string> = {
+  "bg-emerald-400": "#34d399",
+  "bg-orange-400": "#fb923c",
+  "bg-lime-400": "#a3e635",
+  "bg-pink-400": "#f472b6",
+  "bg-purple-400": "#c084fc",
+  "bg-sky-400": "#38bdf8",
+  "bg-rose-400": "#fb7185",
+  "bg-red-400": "#f87171",
+  "bg-teal-400": "#2dd4bf",
+  "bg-amber-400": "#fbbf24",
+  "bg-blue-400": "#60a5fa",
+  "bg-indigo-400": "#818cf8",
+  "bg-yellow-500": "#eab308",
+  "bg-slate-400": "#94a3b8",
+  "bg-gray-400": "#9ca3af",
+  "bg-gray-300": "#d1d5db",
+};
+
+export const getCategoryColor = (categoryTypeName: string): string => {
+  const config = getCategoryIconConfig(categoryTypeName);
+  return CATEGORY_COLOR_MAP[config.bgColor] ?? "#d1d5db";
+};

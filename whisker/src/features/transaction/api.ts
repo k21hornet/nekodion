@@ -29,3 +29,9 @@ export async function getUnreadCount() {
 export async function markAllAsRead() {
   return await fetcher.patch("/transactions/read-all", {});
 }
+
+export async function getMonthlyCategorySummary(year: number, month: number) {
+  return await fetcher.get(
+    `/transactions/monthly-category-summary?year=${year}&month=${month}`,
+  );
+}
