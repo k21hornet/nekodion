@@ -8,6 +8,7 @@ import {
   DailyTransactionResponse,
   MonthlySummaryResponse,
 } from "@/features/transaction/types";
+import { TotalAssetsCard } from "./TotalAssetsCard";
 
 import { ArrowRight, LogOut, PlusCircle } from "lucide-react";
 import Link from "next/link";
@@ -17,6 +18,7 @@ type Props = {
   totalAssets: TotalAssetsResponse;
   monthlySummary: MonthlySummaryResponse;
   expenseItems: { categoryTypeName: string; totalAmount: number }[];
+  initialHidden: boolean;
 };
 
 export const HomePage = ({
@@ -24,6 +26,7 @@ export const HomePage = ({
   totalAssets,
   monthlySummary,
   expenseItems,
+  initialHidden,
 }: Props) => {
   const limitedTransactions = transactions.slice(0, 3); // 直近日の入出金を表示
   const monthlyBalance =
@@ -31,14 +34,10 @@ export const HomePage = ({
 
   return (
     <div className="space-y-4">
-      <Card className="border-0 shadow-sm">
-        <CardContent className="py-3">
-          <p className="text-xl font-bold">総資産</p>
-          <p className="text-right text-3xl font-bold">
-            ¥{totalAssets.totalAssets.toLocaleString()}
-          </p>
-        </CardContent>
-      </Card>
+      <TotalAssetsCard
+        totalAssets={totalAssets}
+        initialHidden={initialHidden}
+      />
 
       <Card className="shadow-sm">
         <CardContent className="py-3">
