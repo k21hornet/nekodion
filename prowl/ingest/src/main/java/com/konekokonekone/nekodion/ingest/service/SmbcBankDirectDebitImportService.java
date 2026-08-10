@@ -1,51 +1,32 @@
-package com.konekokonekone.nekodion.batch.usecase;
+package com.konekokonekone.nekodion.ingest.service;
+
+import com.konekokonekone.nekodion.category.service.CategoryMappingService;
+import com.konekokonekone.nekodion.ingest.request.IngestEmailRequest;
+import com.konekokonekone.nekodion.transaction.dto.TransactionRequestDto;
+import com.konekokonekone.nekodion.transaction.entity.Account;
+import com.konekokonekone.nekodion.transaction.enums.TransactionType;
+import com.konekokonekone.nekodion.transaction.service.TransactionService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.konekokonekone.nekodion.batch.runner.BatchResult;
-import com.konekokonekone.nekodion.batch.runner.BatchResultStatus;
-import com.konekokonekone.nekodion.category.service.CategoryMappingService;
-import com.konekokonekone.nekodion.external.gmail.dto.GmailMessage;
-import com.konekokonekone.nekodion.external.gmail.service.GmailClientService;
-import com.konekokonekone.nekodion.external.gmail.service.GmailImportLogService;
-import com.konekokonekone.nekodion.transaction.dto.TransactionRequestDto;
-import com.konekokonekone.nekodion.transaction.entity.Account;
-import com.konekokonekone.nekodion.transaction.enums.TransactionType;
-import com.konekokonekone.nekodion.transaction.service.TransactionService;
-import com.konekokonekone.nekodion.user.entity.User;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SmbcBankDirectDebitImportUseCase {
-
-    private final GmailClientService gmailClientService;
-
-    private final GmailImportLogService gmailLogService;
+public class SmbcBankDirectDebitImportService {
 
     private final TransactionService transactionService;
 
     private final CategoryMappingService categoryMappingService;
-
-    private static final String GMAIL_QUERY_TEMPLATE = "subject:\"【三井住友銀行】口座引き落としの事前お知らせ\" after:%s";
-
-    private static final int MAX_RESULTS = 100;
-
-    private static final DateTimeFormatter QUERY_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
     // 全角（１２３）・半角（123）どちらの番号にも対応
     private static final Pattern SECTION_PATTERN = Pattern.compile("◆明細[0-9０-９]+(.+?)(?=◆明細[0-9０-９]+|\\z)",
@@ -61,50 +42,20 @@ public class SmbcBankDirectDebitImportUseCase {
     // 配信番号の先頭4桁がMMDD: 配信番号： 0424001244-0010
     private static final Pattern DELIVERY_DATE_PATTERN = Pattern.compile("配信番号[　 ]*：[　 ]*(\\d{2})(\\d{2})\\d+");
 
-    public void execute(User user, Account account, BatchResult result) {
-        var userId = user.getId();
-        var query = GMAIL_QUERY_TEMPLATE.formatted(user.getCreatedAt().toLocalDate().format(QUERY_DATE_FORMAT));
+    private static final String SUBJECT_KEYWORD = "【三井住友銀行】口座引き落としの事前お知らせ";
 
-        List<GmailMessage> messages;
-        try {
-            messages = gmailClientService.fetchMessages(userId, query, MAX_RESULTS);
-        } catch (Exception e) {
-            log.error("Gmail取得に失敗しました。userId={}", userId, e);
-            result.add(BatchResultStatus.FAILURE);
-            return;
-        }
-
-        var userStartedAt = user.getCreatedAt().atZone(ZoneId.of("Asia/Tokyo")).toInstant();
-        for (GmailMessage message : messages) {
-            if (message.getSentAt().toInstant().isBefore(userStartedAt)) {
-                result.add(BatchResultStatus.SKIP);
-                continue;
-            }
-            if (gmailLogService.isAlreadyImported(userId, message.getId())) {
-                result.add(BatchResultStatus.SKIP);
-                continue;
-            }
-            try {
-                processMessage(userId, account, message);
-                result.add(BatchResultStatus.SUCCESS);
-            } catch (Exception e) {
-                log.error("三井住友銀行引き落とし事前お知らせメールの処理に失敗しました。messageId={}", message.getId(), e);
-                result.add(BatchResultStatus.FAILURE);
-            }
-        }
+    public boolean matches(IngestEmailRequest request) {
+        return request.getSubject().contains(SUBJECT_KEYWORD);
     }
 
     @Transactional
-    public void processMessage(String userId, Account account, GmailMessage message) {
-        var body = message.getBody().replace("\r\n", "\n");
+    public void execute(String userId, Account account, IngestEmailRequest request) {
+        var body = request.getText().replace("\r\n", "\n");
 
         var debitDate = extractDebitDate(body);
         var items = extractItems(body);
         if (items.isEmpty())
             throw new IllegalArgumentException("明細が見つかりません");
-
-        String firstItemName = items.get(0).content;
-        BigDecimal firstItemAmount = items.get(0).amount;
 
         for (DebitItem item : items) {
             var category = categoryMappingService.resolveCategory(userId, item.content, false);
@@ -122,8 +73,6 @@ public class SmbcBankDirectDebitImportUseCase {
                     .build();
             transactionService.createTransaction(userId, dto);
         }
-
-        gmailLogService.record(userId, account.getId(), message.getId(), debitDate, firstItemAmount, firstItemName);
     }
 
     private LocalDateTime extractDebitDate(String body) {

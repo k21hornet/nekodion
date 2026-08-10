@@ -10,4 +10,6 @@ public class UserDto {
     private String auth0Id;
 
     private String email;
+
+    private String emailForwardToken;
 }

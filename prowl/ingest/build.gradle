@@ -1,0 +1,26 @@
+plugins {
+	id 'org.springframework.boot'
+	id 'com.google.cloud.tools.jib' version '3.4.4'
+}
+
+dependencies {
+	implementation project(':core')
+	implementation project(':support')
+
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+}
+
+jib {
+	from {
+		image = 'eclipse-temurin:25-jre-alpine'
+	}
+	to {
+		image = project.findProperty('jibToImage') ?: "nekodion-ingest:${version}"
+	}
+	container {
+		mainClass = 'com.konekokonekone.nekodion.ingest.NekodionIngestApplication'
+		jvmFlags = ['-XX:+UseG1GC']
+	}
+	allowInsecureRegistries = true
+}

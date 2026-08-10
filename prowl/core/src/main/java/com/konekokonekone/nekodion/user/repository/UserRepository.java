@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByAuth0Id(String auth0Id);
+
+    Optional<User> findByEmailForwardToken(String emailForwardToken);
 }

@@ -25,6 +25,7 @@ nekodion
 | `batch`    | Scheduled batch jobs                                 |
 | `core`     | Entities, repositories, core services                |
 | `external` | Email parsing, CSV parsing, web scraping             |
+| `ingest`   | Inbound webhook for card statement emails (Cloudflare Email Worker → `/api/email/*`) |
 | `support`  | Shared utilities                                     |
 
 **Module dependency direction:** `api` / `batch` → `core` / `external` → `support`. Never create reverse dependencies.
@@ -38,6 +39,12 @@ nekodion
 
 - Task: `batch:bootRun --args='--batch.execute=<name>'`, Gradle project: `prowl`
 - Env vars: `DB_NAME=nekodion;DB_USERNAME=;DB_PASSWORD=`
+
+**Running the ingest webhook (IntelliJ):**
+
+- Task: `ingest:bootRun`, Gradle project: `prowl`
+- Env vars: `DB_NAME=nekodion;DB_USERNAME=;DB_PASSWORD=;EMAIL_INBOUND_SECRET=`
+- Requests must include the `X-Ingest-Secret` header matching `EMAIL_INBOUND_SECRET`
 
 **Batch jobs:**
 

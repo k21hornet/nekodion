@@ -21,4 +21,7 @@ public class User extends AbstractBaseEntity {
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "email_forward_token")
+    private String emailForwardToken;
 }

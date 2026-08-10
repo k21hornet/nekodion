@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: nekodion-ingest
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: jdbc:mysql://localhost:3368/${DB_NAME}?serverTimezone=Asia/Tokyo
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+ingest:
+  shared-secret: ${EMAIL_INBOUND_SECRET}

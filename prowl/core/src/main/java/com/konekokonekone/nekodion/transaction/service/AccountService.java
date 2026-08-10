@@ -34,10 +34,14 @@ public class AccountService {
         return accountRepository.findByUserIdWithTransactions(userId);
     }
 
+    public List<Account> findByUserIdWithTemplate(String userId) {
+        return accountRepository.findByUserIdWithTemplate(userId);
+    }
+
     /**
      * 口座詳細取得
      *
-     * @param id 口座ID
+     * @param id     口座ID
      * @param userId ユーザーID
      * @return 口座
      */
@@ -49,12 +53,12 @@ public class AccountService {
     /**
      * 口座作成
      *
-     * @param userId ユーザーID
+     * @param userId            ユーザーID
      * @param accountTypeString 口座種別文字列
      * @param accountTemplateId 口座テンプレートID（任意）
-     * @param accountName 口座名
-     * @param balance 残高（任意、null または 0 の場合は残高調整取引を作成しない）
-     * @param closingDay 締日（任意、クレカ口座のみ使用）
+     * @param accountName       口座名
+     * @param balance           残高（任意、null または 0 の場合は残高調整取引を作成しない）
+     * @param closingDay        締日（任意、クレカ口座のみ使用）
      */
     public void createAccount(String userId, String accountTypeString, Long accountTemplateId, String accountName, BigDecimal balance, Integer closingDay) {
         var exists = accountRepository.existsByUserIdAndAccountName(userId, accountName);
@@ -91,12 +95,12 @@ public class AccountService {
     /**
      * 口座更新
      *
-     * @param id 口座ID
-     * @param userId ユーザーID
+     * @param id                口座ID
+     * @param userId            ユーザーID
      * @param accountTypeString 口座種別文字列
      * @param accountTemplateId 口座テンプレートID（任意）
-     * @param accountName 口座名
-     * @param closingDay 締日（任意、クレカ口座のみ使用）
+     * @param accountName       口座名
+     * @param closingDay        締日（任意、クレカ口座のみ使用）
      */
     public void updateAccount(Long id, String userId, String accountTypeString, Long accountTemplateId, String accountName, Integer closingDay) {
         var account = accountRepository.findByIdAndUserId(id, userId)
@@ -133,11 +137,11 @@ public class AccountService {
 
     /**
      * 口座残高編集
-     *
+     * <p>
      * 現在の残高との差分を残高調整取引として記録する。
      *
-     * @param id 口座ID
-     * @param userId ユーザーID
+     * @param id      口座ID
+     * @param userId  ユーザーID
      * @param balance 編集後の残高
      */
     public void updateAccountBalance(Long id, String userId, BigDecimal balance) {
@@ -167,7 +171,7 @@ public class AccountService {
     /**
      * 口座削除
      *
-     * @param id 口座ID
+     * @param id     口座ID
      * @param userId ユーザーID
      */
     public void deleteAccount(Long id, String userId) {

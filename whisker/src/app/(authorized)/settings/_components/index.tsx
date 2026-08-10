@@ -1,34 +1,32 @@
-import { connectGmail } from "@/features/gmail/actions";
-import { Button } from "@/components/ui/button";
+import type { EmailForwardingConfirmation } from "@/features/email-forwarding/types";
+import { CopyField } from "./CopyField";
+import { ConfirmationCard } from "./ConfirmationCard";
+import { ForwardingGuideDialog } from "./ForwardingGuideDialog";
 
 type Props = {
-  connected: boolean;
+  forwardingAddress: string | null;
+  confirmation: EmailForwardingConfirmation | null;
 };
 
-export const SettingsPage = ({ connected }: Props) => {
+export const SettingsPage = ({ forwardingAddress, confirmation }: Props) => {
   return (
     <div className="mx-auto max-w-2xl space-y-6 p-6">
       <h1 className="text-2xl font-semibold">設定</h1>
 
-      <div className="border-border bg-background space-y-4 rounded-xl border p-5">
-        <div className="flex items-center gap-3">
-          <div className="flex-1">
-            <p className="font-medium">Gmail 連携</p>
+      {forwardingAddress && (
+        <div className="border-border bg-background space-y-3 rounded-xl border p-5">
+          <div>
+            <p className="font-medium">カード明細の転送先アドレス</p>
             <p className="text-muted-foreground text-sm">
-              メールから入出金を自動で記録するために Gmail を連携してください
+              カード会社からの利用明細メールをこのアドレスに転送するよう、お使いのメールクライアントで設定してください
             </p>
           </div>
-          {connected ? (
-            <span className="text-sm font-medium text-green-600">連携済み</span>
-          ) : (
-            <form action={connectGmail}>
-              <Button type="submit" size="sm">
-                連携する
-              </Button>
-            </form>
-          )}
+          <CopyField value={forwardingAddress} />
+          <ForwardingGuideDialog />
         </div>
-      </div>
+      )}
+
+      {confirmation && <ConfirmationCard confirmation={confirmation} />}
     </div>
   );
 };
