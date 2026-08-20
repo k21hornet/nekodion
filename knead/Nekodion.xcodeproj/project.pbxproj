@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7D0D3DAB3037256F00645AC2 /* Auth0 in Frameworks */ = {isa = PBXBuildFile; productRef = 7D0D3DAA3037256F00645AC2 /* Auth0 */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		7D0D3C19303323AF00645AC2 /* Nekodion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nekodion.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D0D3DAB3037256F00645AC2 /* Auth0 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = Nekodion;
 			packageProductDependencies = (
+				7D0D3DAA3037256F00645AC2 /* Auth0 */,
 			);
 			productName = Nekodion;
 			productReference = 7D0D3C19303323AF00645AC2 /* Nekodion.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 7D0D3C10303323AF00645AC2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7D0D3DA93037256F00645AC2 /* XCRemoteSwiftPackageReference "Auth0" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7D0D3C1A303323AF00645AC2 /* Products */;
 			projectDirPath = "";
@@ -332,6 +341,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7D0D3DA93037256F00645AC2 /* XCRemoteSwiftPackageReference "Auth0" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/auth0/Auth0.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7D0D3DAA3037256F00645AC2 /* Auth0 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D0D3DA93037256F00645AC2 /* XCRemoteSwiftPackageReference "Auth0" */;
+			productName = Auth0;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7D0D3C11303323AF00645AC2 /* Project object */;
 }
