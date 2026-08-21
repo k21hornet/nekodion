@@ -10,7 +10,7 @@ struct NekodionApp: App {
     @StateObject private var authService = AuthenticationService()
     var body: some Scene {
         WindowGroup {
-            ContentView(authService: authService)
+            RootView(authService: authService)
         }
     }
 }
