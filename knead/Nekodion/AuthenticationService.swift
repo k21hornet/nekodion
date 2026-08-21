@@ -35,6 +35,11 @@ class AuthenticationService: ObservableObject {
         // Get the user profile from the stored ID token
         user = try? credentialsManager.userProfile()
     }
+
+    func getAccessToken() async throws -> String {
+        let credentials = try await credentialsManager.credentials()
+        return credentials.accessToken
+    }
     
     func login() async {
         isLoading = true
@@ -46,6 +51,7 @@ class AuthenticationService: ObservableObject {
             _ = try await Auth0
                 .webAuth()
                 .scope("openid profile email offline_access")
+                .audience("https://api.nekodion.com")
                 .useCredentialsManager(credentialsManager)
                 .start()
             
