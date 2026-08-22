@@ -2,6 +2,10 @@ import Foundation
 
 enum AppConfig {
     static var apiBaseURL: String {
-        Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String ?? "http://localhost:8080"
+        #if targetEnvironment(simulator)
+        return "http://localhost:8080"
+        #else
+        return "https://nekodion.konekokonekone.com"
+        #endif
     }
 }
