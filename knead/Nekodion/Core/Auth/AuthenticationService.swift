@@ -66,7 +66,7 @@ class AuthenticationService: ObservableObject {
     func logout() async {
         isLoading = true
         defer { isLoading = false }
-        
+
         do {
             try await Auth0
               .webAuth()
@@ -77,5 +77,9 @@ class AuthenticationService: ObservableObject {
         } catch {
             errorMessage = "Logout failed: \(error.localizedDescription)"
         }
+    }
+
+    func reportError(_ message: String, _ error: Error) {
+        errorMessage = "\(message): \(error.localizedDescription)"
     }
 }

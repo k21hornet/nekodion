@@ -12,15 +12,15 @@ struct RootView: View {
                     .tabItem {
                         Label("ホーム", systemImage: "house")
                     }
-                TransactionView()
+                TransactionListView(authService: authService)
                     .tabItem {
                         Label("入出金", systemImage: "arrow.left.arrow.right")
                     }
-                MonthlyView()
+                MonthlyView(authService: authService)
                     .tabItem {
                         Label("月次", systemImage: "calendar")
                     }
-                AccountView()
+                AccountView(authService: authService)
                     .tabItem {
                         Label("口座", systemImage: "person")
                     }
@@ -28,6 +28,20 @@ struct RootView: View {
                     .tabItem {
                         Label("設定", systemImage: "gear")
                     }
+            }
+            .alert(
+                "エラー",
+                isPresented: Binding(
+                    get: { authService.errorMessage != nil },
+                    set: { isPresented in
+                        if !isPresented { authService.errorMessage = nil }
+                    }
+                ),
+                presenting: authService.errorMessage
+            ) { _ in
+                Button("OK") { authService.errorMessage = nil }
+            } message: { message in
+                Text(message)
             }
         } else {
             VStack {
