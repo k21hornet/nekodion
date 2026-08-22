@@ -4,8 +4,9 @@ struct SettingsView: View {
     @ObservedObject var authService: AuthenticationService
     
     var body: some View {
-        VStack {
-            Text("設定")
+        ZStack {
+            Color.blue.opacity(0.06)
+                .ignoresSafeArea()
             Button{
                 Task {
                     await authService.logout()

@@ -9,7 +9,7 @@ struct HomeView: View {
     private var apiClient: APIClient { APIClient(authService: authService) }
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottomTrailing) {
             Color.blue.opacity(0.06)
                 .ignoresSafeArea()
             ScrollView {
@@ -204,6 +204,20 @@ struct HomeView: View {
             .task {
                 await fetchTotalAssets()
             }
+
+            Button {
+            } label: {
+                Image(systemName: "plus")
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 56, height: 56)
+                    .background(Color.blue)
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+            }
+            .padding(.trailing, 20)
+            .padding(.bottom, 24)
+            .accessibilityLabel("追加")
         }
     }
 
