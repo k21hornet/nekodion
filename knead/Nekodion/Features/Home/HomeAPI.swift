@@ -24,4 +24,8 @@ struct HomeAPI {
     func getUnreadTransactions() async throws -> [DailyTransactionResponse] {
         try await transactionAPI.getUnreadTransactions()
     }
+
+    func markAsRead(ids: [Int]) async throws {
+        try await transactionAPI.markAsRead(ids: ids)
+    }
 }

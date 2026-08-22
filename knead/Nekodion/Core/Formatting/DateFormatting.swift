@@ -20,3 +20,11 @@ func formatDate(_ dateTimeString: String) -> String {
     let weekday = japaneseWeekdaySymbols[(components.weekday ?? 1) - 1]
     return "\(components.year ?? 0)年\(components.month ?? 0)月\(components.day ?? 0)日（\(weekday)）"
 }
+
+func parseTransactionDateTime(_ dateTimeString: String) -> Date? {
+    dateTimeParser.date(from: String(dateTimeString.prefix(19)))
+}
+
+func formatTransactionDateTime(_ date: Date) -> String {
+    dateTimeParser.string(from: date)
+}

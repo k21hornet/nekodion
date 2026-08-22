@@ -32,3 +32,33 @@ struct TransactionItem: Decodable, Identifiable {
     let categoryName: String
     let categoryTypeName: String
 }
+
+struct TransactionDetailResponse: Decodable {
+    let id: Int
+    let accountId: Int?
+    let categoryId: Int
+    let transactionType: String
+    let direction: String
+    let transactionName: String
+    let amount: Decimal
+    let transactionDateTime: String
+    let description: String?
+    let isAggregated: Bool
+    let isDeletable: Bool
+}
+
+struct MarkAsReadRequest: Encodable {
+    let transactionIds: [Int]
+}
+
+struct TransactionRequest: Encodable {
+    let accountId: Int?
+    let categoryId: Int
+    let transactionType: String
+    let direction: String
+    let transactionName: String
+    let amount: Decimal
+    let transactionDateTime: String
+    let description: String?
+    let isAggregated: Bool?
+}

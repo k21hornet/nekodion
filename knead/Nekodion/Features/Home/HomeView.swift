@@ -11,18 +11,27 @@ struct HomeView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.blue.opacity(0.06)
-                .ignoresSafeArea()
-            if viewModel.isLoading {
-                ProgressView()
-            } else {
-                ScrollView {
-                    totalAssetsCard
-                    monthlySummaryCard
-                    unreadTransactionsCard
-                    recentTransactionsCard
-                    Spacer()
+        NavigationStack {
+            ZStack(alignment: .bottomTrailing) {
+                Color.blue.opacity(0.06)
+                    .ignoresSafeArea()
+                if viewModel.isLoading {
+                    ProgressView()
+                } else {
+                    ScrollView {
+                        totalAssetsCard
+                        monthlySummaryCard
+                        unreadTransactionsCard
+                        recentTransactionsCard
+                        Spacer()
+                    }
+                }
+
+                AddTransactionButton()
+            }
+            .navigationDestination(for: TransactionRoute.self) { route in
+                TransactionFormView(mode: route, authService: authService) {
+                    Task { await viewModel.load() }
                 }
             }
         }
@@ -154,6 +163,7 @@ struct HomeView: View {
                         .foregroundStyle(Color.gray)
                         .padding()
                     Button("既読をつける") {
+                        Task { await viewModel.markAllAsRead() }
                     }
                     .disabled(viewModel.unreadTransactions.isEmpty)
                     .padding()

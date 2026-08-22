@@ -11,79 +11,74 @@ struct MonthlyView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            Color.blue.opacity(0.06)
-                .ignoresSafeArea()
-            ScrollView {
-                HStack {
-                    Button {
-                        viewModel.changeMonth(by: -1)
-                    }
-                    label: {
-                        Image(systemName: "chevron.left")
-                    }
-                    .frame(maxWidth: .infinity)
-                    .accessibilityLabel("前の月")
-
-                    Text("\(viewModel.year)年\(viewModel.month)月")
+        NavigationStack {
+            ZStack(alignment: .bottomTrailing) {
+                Color.blue.opacity(0.06)
+                    .ignoresSafeArea()
+                ScrollView {
+                    HStack {
+                        Button {
+                            viewModel.changeMonth(by: -1)
+                        }
+                        label: {
+                            Image(systemName: "chevron.left")
+                        }
                         .frame(maxWidth: .infinity)
+                        .accessibilityLabel("前の月")
 
-                    Button {
-                        viewModel.changeMonth(by: 1)
+                        Text("\(viewModel.year)年\(viewModel.month)月")
+                            .frame(maxWidth: .infinity)
+
+                        Button {
+                            viewModel.changeMonth(by: 1)
+                        }
+                        label: {
+                            Image(systemName: "chevron.right")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .disabled(viewModel.isCurrentMonth)
+                        .accessibilityLabel("次の月")
                     }
-                    label: {
-                        Image(systemName: "chevron.right")
+                    .font(.title3.weight(.semibold))
+                    .padding(.horizontal)
+                    .padding(.top, 12)
+
+                    Picker("入出金の種類", selection: $viewModel.selectedTransactionType) {
+                        Text("支出")
+                            .tag(MonthlyTransactionType.expense)
+                        Text("収入")
+                            .tag(MonthlyTransactionType.income)
                     }
-                    .frame(maxWidth: .infinity)
-                    .disabled(viewModel.isCurrentMonth)
-                    .accessibilityLabel("次の月")
-                }
-                .font(.title3.weight(.semibold))
-                .padding(.horizontal)
-                .padding(.top, 12)
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal)
 
-                Picker("入出金の種類", selection: $viewModel.selectedTransactionType) {
-                    Text("支出")
-                        .tag(MonthlyTransactionType.expense)
-                    Text("収入")
-                        .tag(MonthlyTransactionType.income)
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal)
-
-                if viewModel.isLoading {
-                    ProgressView()
-                        .padding(.top, 40)
-                } else {
-                    monthlySummaryRow
-                        .padding(.horizontal)
-                        .padding(.top, 12)
-
-                    if viewModel.categoryItems.isEmpty {
-                        Text("この月のデータはありません")
-                            .font(.callout)
-                            .foregroundStyle(Color.gray)
+                    if viewModel.isLoading {
+                        ProgressView()
                             .padding(.top, 40)
                     } else {
-                        categoryChart
-                        categoryBreakdownCard
+                        monthlySummaryRow
+                            .padding(.horizontal)
+                            .padding(.top, 12)
+
+                        if viewModel.categoryItems.isEmpty {
+                            Text("この月のデータはありません")
+                                .font(.callout)
+                                .foregroundStyle(Color.gray)
+                                .padding(.top, 40)
+                        } else {
+                            categoryChart
+                            categoryBreakdownCard
+                        }
                     }
                 }
-            }
 
-            Button {
-            } label: {
-                Image(systemName: "plus")
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(.white)
-                    .frame(width: 56, height: 56)
-                    .background(Color.blue)
-                    .clipShape(Circle())
-                    .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                AddTransactionButton()
             }
-            .padding(.trailing, 20)
-            .padding(.bottom, 24)
-            .accessibilityLabel("追加")
+            .navigationDestination(for: TransactionRoute.self) { route in
+                TransactionFormView(mode: route, authService: authService) {
+                    Task { await viewModel.load() }
+                }
+            }
         }
         .task(id: "\(viewModel.year)-\(viewModel.month)") {
             await viewModel.load()

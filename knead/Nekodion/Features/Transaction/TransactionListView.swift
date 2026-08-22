@@ -10,18 +10,27 @@ struct TransactionListView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.blue.opacity(0.06)
-                .ignoresSafeArea()
-            if viewModel.isLoading {
-                ProgressView()
-            } else {
-                ScrollView {
-                    Text("入出金")
-                        .font(.title3.weight(.semibold))
-                        .padding(.top, 12)
-                    unreadTransactionsCard
-                    allTransactionsCard
+        NavigationStack {
+            ZStack(alignment: .bottomTrailing) {
+                Color.blue.opacity(0.06)
+                    .ignoresSafeArea()
+                if viewModel.isLoading {
+                    ProgressView()
+                } else {
+                    ScrollView {
+                        Text("入出金")
+                            .font(.title3.weight(.semibold))
+                            .padding(.top, 12)
+                        unreadTransactionsCard
+                        allTransactionsCard
+                    }
+                }
+
+                AddTransactionButton()
+            }
+            .navigationDestination(for: TransactionRoute.self) { route in
+                TransactionFormView(mode: route, authService: authService) {
+                    Task { await viewModel.load() }
                 }
             }
         }
@@ -44,6 +53,7 @@ struct TransactionListView: View {
                         .foregroundStyle(Color.gray)
                         .padding()
                     Button("既読をつける") {
+                        Task { await viewModel.markAllAsRead() }
                     }
                     .disabled(viewModel.unreadTransactions.isEmpty)
                     .padding()

@@ -28,4 +28,15 @@ final class TransactionViewModel: ObservableObject {
         }
         isLoading = false
     }
+
+    func markAllAsRead() async {
+        let ids = unreadTransactions.flatMap { $0.dailyTransactions.map(\.id) }
+        guard !ids.isEmpty else { return }
+        do {
+            try await transactionAPI.markAsRead(ids: ids)
+            await load()
+        } catch {
+            authService.reportError("既読処理に失敗しました", error)
+        }
+    }
 }

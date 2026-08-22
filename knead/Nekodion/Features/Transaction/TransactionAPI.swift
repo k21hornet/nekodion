@@ -22,4 +22,24 @@ struct TransactionAPI {
     func getUnreadTransactions() async throws -> [DailyTransactionResponse] {
         try await apiClient.get("/api/transactions/unread")
     }
+
+    func markAsRead(ids: [Int]) async throws {
+        try await apiClient.patch("/api/transactions/read-all", body: MarkAsReadRequest(transactionIds: ids))
+    }
+
+    func getTransaction(id: Int) async throws -> TransactionDetailResponse {
+        try await apiClient.get("/api/transactions/\(id)")
+    }
+
+    func createTransaction(_ request: TransactionRequest) async throws {
+        try await apiClient.post("/api/transactions", body: request)
+    }
+
+    func updateTransaction(id: Int, _ request: TransactionRequest) async throws {
+        try await apiClient.put("/api/transactions/\(id)", body: request)
+    }
+
+    func deleteTransaction(id: Int) async throws {
+        try await apiClient.delete("/api/transactions/\(id)")
+    }
 }
