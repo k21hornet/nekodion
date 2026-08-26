@@ -56,8 +56,10 @@ struct TransactionFormView: View {
                     viewModel.directionChanged()
                 }
 
+                Divider()
+
                 Picker("カテゴリ", selection: $viewModel.selectedCategoryId) {
-                    Text("選択してください").tag(Int?.none)
+                    Text("カテゴリーを選択").tag(Int?.none)
                     ForEach(viewModel.filteredCategories) { group in
                         Section(group.categoryTypeName) {
                             ForEach(group.categories) { category in
@@ -67,19 +69,38 @@ struct TransactionFormView: View {
                     }
                 }
 
+                Divider()
+
                 Picker("口座", selection: $viewModel.selectedAccountId) {
-                    Text("未選択").tag(Int?.none)
+                    Text("口座を選択").tag(Int?.none)
                     ForEach(viewModel.flattenedAccounts) { account in
                         Text(account.accountName).tag(Int?.some(account.accountId))
                     }
                 }
 
-                TextField("金額", text: $viewModel.amountText)
-                    .keyboardType(.numberPad)
+                Divider()
+
+                HStack {
+                    Text("¥")
+                        .font(.title2)
+                    TextField("金額", text: $viewModel.amountText)
+                        .font(.title2)
+                        .keyboardType(.numberPad)
+                }
+
+                Divider()
 
                 TextField("取引名", text: $viewModel.transactionName)
 
-                DatePicker("日時", selection: $viewModel.selectedDate)
+                Divider()
+
+                DatePicker("日付", selection: $viewModel.selectedDate, displayedComponents: .date)
+
+                Divider()
+
+                Toggle("計算対象", isOn: $viewModel.isAggregated)
+
+                Divider()
 
                 TextField("メモ（任意）", text: $viewModel.description, axis: .vertical)
             }

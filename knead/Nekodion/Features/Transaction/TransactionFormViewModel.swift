@@ -8,10 +8,11 @@ final class TransactionFormViewModel: ObservableObject {
     @Published var direction: String = "OUT"
     @Published var selectedCategoryId: Int?
     @Published var selectedAccountId: Int?
-    @Published var amountText: String = ""
+    @Published var amountText: String = "0"
     @Published var transactionName: String = ""
     @Published var selectedDate: Date = Date()
     @Published var description: String = ""
+    @Published var isAggregated: Bool = true
 
     @Published var categoryGroups: [CategoryTypeResponse] = []
     @Published var accountGroups: [AccountSummaryResponse] = []
@@ -80,6 +81,7 @@ final class TransactionFormViewModel: ObservableObject {
         transactionName = detail.transactionName
         selectedDate = parseTransactionDateTime(detail.transactionDateTime) ?? Date()
         description = detail.description ?? ""
+        isAggregated = detail.isAggregated
         isDeletable = detail.isDeletable
     }
 
@@ -123,7 +125,7 @@ final class TransactionFormViewModel: ObservableObject {
             amount: amount,
             transactionDateTime: formatTransactionDateTime(selectedDate),
             description: description.isEmpty ? nil : description,
-            isAggregated: true
+            isAggregated: isAggregated
         )
 
         do {

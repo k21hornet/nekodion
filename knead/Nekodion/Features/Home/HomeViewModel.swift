@@ -3,7 +3,11 @@ import Foundation
 
 @MainActor
 final class HomeViewModel: ObservableObject {
-    @Published var isTotalAssetsHidden = false
+    @Published var isTotalAssetsHidden = UserDefaults.standard.bool(forKey: "isTotalAssetsHidden") {
+        didSet {
+            UserDefaults.standard.set(isTotalAssetsHidden, forKey: "isTotalAssetsHidden")
+        }
+    }
     @Published var isLoading = true
     @Published var totalAssets: Decimal = 0
     @Published var monthlySummary: MonthlySummaryResponse?
